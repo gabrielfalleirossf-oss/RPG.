@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Abismo — Escolha seu caminho</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="tela-abismo">
+        <h1 class="titulo-acessivel">Escolha como entrar no RPG Abismo</h1>
+
+        <!-- Imagem principal da página -->
+        <img
+            class="background-abismo"
+            src="assets/background-abismo.png"
+            alt="Aventureiros enfrentando uma criatura cercada por uma aura azul"
+        >
+
+        <!-- Camada decorativa das linhas que receberão o brilho no CSS -->
+        <svg
+            class="linhas-brilhantes"
+            viewBox="0 0 1600 1000"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+        >
+            <path class="linha linha-1" d="M0 160 L410 360"></path>
+            <path class="linha linha-2" d="M130 0 L510 305"></path>
+            <path class="linha linha-3" d="M1600 135 L1190 355"></path>
+            <path class="linha linha-4" d="M1495 0 L1110 300"></path>
+            <path class="linha linha-5" d="M0 880 L435 705"></path>
+            <path class="linha linha-6" d="M1600 875 L1190 700"></path>
+        </svg>
+
+        <!-- Escolha entre a área do Mestre e a área dos Jogadores -->
+        <nav class="opcoes-de-acesso" aria-label="Escolha seu tipo de acesso">
+            <a
+                class="botao-acesso botao-mestre"
+                href="mestre/index.html"
+                aria-label="Entrar na área do Mestre do RPG"
+            >
+                <span class="moldura-do-icone">
+                    <img
+                        class="icone-acesso"
+                        src="assets/icone-mestre.png"
+                        alt="Bola de cristal envolvida por duas mãos"
+                    >
+                </span>
+
+                <span class="nome-do-acesso">Mestre do RPG</span>
+            </a>
+
+            <a
+                class="botao-acesso botao-jogadores"
+                href="jogadores/index.html"
+                aria-label="Entrar na área dos Jogadores"
+            >
+                <span class="moldura-do-icone">
+                    <img
+                        class="icone-acesso"
+                        src="assets/icone-jogadores.png"
+                        alt="Dado de vinte lados com o número vinte"
+                    >
+                </span>
+
+                <span class="nome-do-acesso">Jogadores</span>
+            </a>
+        </nav>
+
+        <a class="botao-voltar" href="../index.html">Voltar</a>
+    </main>
+</body>
+</html>

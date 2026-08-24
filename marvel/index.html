@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Marvel RPG — Escolha seu caminho</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="tela-marvel">
+        <h1 class="titulo-acessivel">Escolha como entrar no RPG Marvel</h1>
+
+        <!-- GIF de fundo: foi preparado para tocar uma vez e parar -->
+        <img
+            id="background-marvel"
+            class="background-marvel"
+            src="assets/background-marvel.gif?v=2"
+            alt="Animação com o logotipo da Marvel"
+        >
+
+        <!-- Escurece o fundo para destacar os botões -->
+        <div class="sombra-do-fundo" aria-hidden="true"></div>
+
+        <!-- Escolha entre a área do Mestre e a área dos Jogadores -->
+        <nav class="opcoes-de-acesso" aria-label="Escolha seu tipo de acesso">
+            <a
+                class="botao-acesso botao-mestre"
+                href="mestre/index.html"
+                aria-label="Entrar na área do Mestre do RPG Marvel"
+            >
+                <span class="moldura-da-imagem">
+                    <img
+                        class="imagem-acesso"
+                        src="assets/franklin-richards.png"
+                        alt="Franklin Richards"
+                    >
+                </span>
+
+                <span class="nome-do-acesso">Mestre do RPG</span>
+            </a>
+
+            <a
+                class="botao-acesso botao-jogadores"
+                href="jogadores/index.html"
+                aria-label="Entrar na área dos Jogadores do RPG Marvel"
+            >
+                <span class="moldura-da-imagem">
+                    <img
+                        class="imagem-acesso"
+                        src="assets/vingadores.png"
+                        alt="Os Vingadores reunidos"
+                    >
+                </span>
+
+                <span class="nome-do-acesso">Jogadores</span>
+            </a>
+        </nav>
+
+        <a class="botao-voltar" href="../index.html">Voltar</a>
+    </main>
+
+    <script>
+        const backgroundMarvel = document.getElementById("background-marvel");
+
+        backgroundMarvel.addEventListener("load", function pararAnimacao() {
+            if (!backgroundMarvel.src.includes(".gif")) return;
+
+            // O GIF possui 23 quadros de 70 ms: 23 × 70 = 1610 ms.
+            setTimeout(() => {
+                backgroundMarvel.src = "assets/background-marvel-final.png";
+            }, 1610);
+        }, { once: true });
+    </script>
+</body>
+</html>

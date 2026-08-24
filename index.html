@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Escolha sua aventura</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <main class="tela-inicial">
+        <h1 class="titulo-principal">Escolha sua aventura</h1>
+
+        <div class="seletor-aventuras">
+            <!-- Lado do RPG de fantasia -->
+            <section class="lado-aventura lado-rpg" aria-label="RPG de fantasia">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-rpg.png"
+                    alt="Aventureiros enfrentando uma aranha gigante"
+                >
+            </section>
+
+            <!-- A rachadura permanece entre os dois universos -->
+            <div class="rachadura" aria-hidden="true">
+                <svg viewBox="0 0 80 1000" preserveAspectRatio="none">
+                    <path
+                        d="M38 0 L24 110 L47 230 L20 340 L58 465 L30 590 L52 720 L28 850 L42 1000"
+                    ></path>
+                </svg>
+            </div>
+
+            <!-- Lado do RPG da Marvel -->
+            <section class="lado-aventura lado-marvel" aria-label="RPG da Marvel">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-marvel.png"
+                    alt="Mosaico em preto e branco com heróis dos quadrinhos"
+                >
+            </section>
+
+            <!-- Os botões ficam parados enquanto os backgrounds se movem -->
+            <div class="botoes-aventura">
+                <a
+                    class="botao-aventura botao-rpg"
+                    href="rpg/index.html"
+                    aria-label="Entrar no RPG Abismo"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-rpg.png"
+                        alt="Logo do RPG Abismo"
+                    >
+                </a>
+
+                <a
+                    class="botao-aventura botao-marvel"
+                    href="marvel/index.html"
+                    aria-label="Entrar no RPG da Marvel"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-marvel.png"
+                        alt="Logo do RPG da Marvel"
+                    >
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

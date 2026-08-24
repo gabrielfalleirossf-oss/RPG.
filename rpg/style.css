@@ -1,0 +1,331 @@
+/* Configurações gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    background: #020305;
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Página completa de Abismo */
+.tela-abismo {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #020305;
+}
+
+.background-abismo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: contrast(1.04) brightness(0.74);
+    transform: scale(1.01);
+}
+
+/* Escurece as bordas e melhora a leitura dos botões. */
+.tela-abismo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        radial-gradient(circle at 50% 42%, transparent 0 22%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.56) 100%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.15), transparent 35%, rgba(0, 0, 0, 0.2));
+    pointer-events: none;
+}
+
+/* Título apenas para leitores de tela. */
+.titulo-acessivel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Linhas de energia branca sobre o cenário. */
+.linhas-brilhantes {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.linha {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 10 26;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35));
+    animation: brilho-das-linhas 4.8s ease-in-out infinite;
+}
+
+.linha-2,
+.linha-5 {
+    animation-delay: -1.4s;
+}
+
+.linha-3,
+.linha-6 {
+    animation-delay: -2.8s;
+}
+
+.linha-4 {
+    animation-delay: -3.7s;
+}
+
+@keyframes brilho-das-linhas {
+    0%,
+    70%,
+    100% {
+        stroke: rgba(255, 255, 255, 0.09);
+        stroke-dashoffset: 0;
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+    }
+
+    35% {
+        stroke: rgba(255, 255, 255, 0.72);
+        stroke-dashoffset: -75;
+        filter:
+            drop-shadow(0 0 5px rgba(255, 255, 255, 0.95))
+            drop-shadow(0 0 14px rgba(255, 255, 255, 0.5));
+    }
+}
+
+/* Área dos dois acessos */
+.opcoes-de-acesso {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.botao-acesso {
+    position: absolute;
+    top: 54%;
+
+    display: flex;
+    width: clamp(180px, 18vw, 340px);
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(12px, 1.4vw, 22px);
+    transform: translate(-50%, -50%);
+
+    color: #ffffff;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.botao-mestre {
+    left: 25%;
+}
+
+.botao-jogadores {
+    left: 75%;
+}
+
+.moldura-do-icone {
+    position: relative;
+    display: flex;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    border: 2px solid rgba(255, 255, 255, 0.82);
+    border-radius: 12px;
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 60%),
+        rgba(0, 0, 0, 0.72);
+    box-shadow:
+        0 0 14px rgba(255, 255, 255, 0.34),
+        inset 0 0 30px rgba(255, 255, 255, 0.07),
+        0 14px 35px rgba(0, 0, 0, 0.58);
+
+    transition:
+        transform 350ms ease,
+        border-color 350ms ease,
+        background 350ms ease,
+        box-shadow 350ms ease;
+}
+
+.moldura-do-icone::before {
+    content: "";
+    position: absolute;
+    inset: -45%;
+    z-index: 0;
+    background: conic-gradient(
+        transparent 0deg 115deg,
+        rgba(255, 255, 255, 0.2) 145deg,
+        transparent 175deg 360deg
+    );
+    opacity: 0;
+    transition: opacity 350ms ease;
+    animation: girar-brilho 6s linear infinite;
+}
+
+@keyframes girar-brilho {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.icone-acesso {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 82%;
+    height: 82%;
+    object-fit: contain;
+    filter:
+        grayscale(100%)
+        drop-shadow(0 0 8px rgba(255, 255, 255, 0.32));
+    transition:
+        transform 350ms ease,
+        filter 350ms ease;
+}
+
+.nome-do-acesso {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: clamp(1.15rem, 1.65vw, 2rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.42),
+        2px 3px 5px rgba(0, 0, 0, 0.95);
+    transition:
+        color 350ms ease,
+        text-shadow 350ms ease,
+        transform 350ms ease;
+}
+
+.botao-acesso:hover .moldura-do-icone,
+.botao-acesso:focus-visible .moldura-do-icone {
+    transform: translateY(-8px) scale(1.045);
+    border-color: #ffffff;
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.17), transparent 64%),
+        rgba(0, 0, 0, 0.86);
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.82),
+        0 0 54px rgba(255, 255, 255, 0.22),
+        inset 0 0 34px rgba(255, 255, 255, 0.12),
+        0 18px 38px rgba(0, 0, 0, 0.68);
+}
+
+.botao-acesso:hover .moldura-do-icone::before,
+.botao-acesso:focus-visible .moldura-do-icone::before {
+    opacity: 1;
+}
+
+.botao-acesso:hover .icone-acesso,
+.botao-acesso:focus-visible .icone-acesso {
+    transform: scale(1.055);
+    filter:
+        grayscale(100%)
+        brightness(1.18)
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.72));
+}
+
+.botao-acesso:hover .nome-do-acesso,
+.botao-acesso:focus-visible .nome-do-acesso {
+    color: #ffffff;
+    transform: translateY(-3px);
+    text-shadow:
+        0 0 9px rgba(255, 255, 255, 0.92),
+        0 0 24px rgba(255, 255, 255, 0.35),
+        2px 3px 5px rgba(0, 0, 0, 0.95);
+}
+
+.botao-acesso:focus-visible {
+    outline: none;
+}
+
+/* Botão discreto para retornar à seleção dos RPGs. */
+.botao-voltar {
+    position: absolute;
+    bottom: clamp(18px, 3vh, 34px);
+    left: clamp(18px, 3vw, 46px);
+    z-index: 4;
+    padding: 10px 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.52);
+    color: rgba(255, 255, 255, 0.78);
+    font: 600 0.9rem Arial, sans-serif;
+    letter-spacing: 0.09em;
+    text-decoration: none;
+    text-transform: uppercase;
+    backdrop-filter: blur(5px);
+    transition: 250ms ease;
+}
+
+.botao-voltar:hover,
+.botao-voltar:focus-visible {
+    border-color: #ffffff;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.28);
+    outline: none;
+}
+
+@media (max-width: 760px) {
+    .tela-abismo {
+        min-height: 100svh;
+    }
+
+    .botao-acesso {
+        top: 52%;
+        width: clamp(130px, 34vw, 210px);
+        gap: 12px;
+    }
+
+    .nome-do-acesso {
+        font-size: clamp(0.88rem, 3.5vw, 1.2rem);
+        letter-spacing: 0.04em;
+    }
+
+    .botao-voltar {
+        padding: 8px 12px;
+        font-size: 0.76rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
