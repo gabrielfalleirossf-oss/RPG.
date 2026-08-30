@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar no RPG</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../supabase-config.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <main class="pagina-login" data-rpg="abismo">
+        <a id="voltar" class="voltar" href="../index.html">← Voltar</a>
+
+        <section class="cartao-login" aria-labelledby="titulo-login">
+            <p id="universo" class="universo">ABISMO</p>
+            <h1 id="titulo-login">Acesso do Jogador</h1>
+            <p id="subtitulo" class="subtitulo">Entre na sua conta ou crie uma gratuitamente.</p>
+
+            <div class="abas" role="tablist" aria-label="Entrar ou cadastrar">
+                <button id="aba-entrar" class="aba ativa" type="button">Entrar</button>
+                <button id="aba-cadastrar" class="aba" type="button">Criar conta</button>
+            </div>
+
+            <form id="formulario-login" novalidate>
+                <div id="campo-nome" class="campo oculto">
+                    <label for="nome">Seu nome</label>
+                    <input id="nome" name="nome" type="text" autocomplete="name" maxlength="60" placeholder="Como devemos chamar você?">
+                </div>
+
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <input id="email" name="email" type="email" autocomplete="email" required placeholder="seuemail@exemplo.com">
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <div class="senha-container">
+                        <input id="senha" name="senha" type="password" autocomplete="current-password" minlength="6" required placeholder="Mínimo de 6 caracteres">
+                        <button id="mostrar-senha" class="mostrar-senha" type="button" aria-label="Mostrar senha">◉</button>
+                    </div>
+                </div>
+
+                <button id="enviar" class="botao-principal" type="submit">Entrar</button>
+                <p id="mensagem" class="mensagem" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

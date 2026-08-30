@@ -1,0 +1,85 @@
+* { box-sizing: border-box; }
+
+:root {
+    color-scheme: dark;
+    --destaque: #76cfff;
+    --destaque-forte: #149bdf;
+    --fundo-imagem: url("../rpg/assets/background-abismo.png");
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    background: #030508;
+    color: #fff;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.pagina-login {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 72px 20px 28px;
+    background:
+        linear-gradient(115deg, rgba(0, 0, 0, .88), rgba(0, 0, 0, .48)),
+        var(--fundo-imagem) center / cover fixed;
+}
+
+.pagina-login[data-rpg="marvel"] {
+    --destaque: #ff6b6b;
+    --destaque-forte: #e62429;
+    --fundo-imagem: url("../marvel/assets/background-marvel-final.png");
+}
+
+.voltar {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 2;
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 999px;
+    background: rgba(0,0,0,.55);
+    color: white;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+}
+
+.cartao-login {
+    width: min(100%, 430px);
+    padding: clamp(26px, 5vw, 42px);
+    border: 1px solid color-mix(in srgb, var(--destaque) 58%, transparent);
+    border-radius: 22px;
+    background: rgba(5, 7, 11, .88);
+    box-shadow: 0 0 42px color-mix(in srgb, var(--destaque) 25%, transparent), 0 22px 60px rgba(0,0,0,.62);
+    backdrop-filter: blur(15px);
+}
+
+.universo { margin: 0 0 8px; color: var(--destaque); font-size: .78rem; font-weight: 800; letter-spacing: .28em; }
+h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(1.8rem, 6vw, 2.55rem); }
+.subtitulo { margin: 10px 0 26px; color: #bfc4ce; line-height: 1.5; }
+
+.abas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 24px; padding: 5px; border-radius: 12px; background: rgba(255,255,255,.06); }
+.aba { padding: 11px; border: 0; border-radius: 9px; background: transparent; color: #aeb4bf; font: inherit; font-weight: 700; cursor: pointer; }
+.aba.ativa { background: var(--destaque-forte); color: #fff; box-shadow: 0 0 18px color-mix(in srgb, var(--destaque) 35%, transparent); }
+.aba:disabled { display: none; }
+
+.campo { margin-bottom: 18px; }
+.campo.oculto { display: none; }
+label { display: block; margin-bottom: 7px; color: #e7e9ee; font-size: .92rem; font-weight: 650; }
+input { width: 100%; padding: 13px 14px; border: 1px solid #414650; border-radius: 10px; outline: none; background: rgba(255,255,255,.055); color: #fff; font: inherit; transition: border-color .2s, box-shadow .2s; }
+input:focus { border-color: var(--destaque); box-shadow: 0 0 0 3px color-mix(in srgb, var(--destaque) 18%, transparent); }
+
+.senha-container { position: relative; }
+.senha-container input { padding-right: 48px; }
+.mostrar-senha { position: absolute; top: 50%; right: 7px; transform: translateY(-50%); width: 38px; height: 38px; border: 0; background: transparent; color: #d3d6dd; cursor: pointer; }
+.botao-principal { width: 100%; margin-top: 4px; padding: 14px; border: 0; border-radius: 10px; background: linear-gradient(135deg, var(--destaque-forte), var(--destaque)); color: white; font: inherit; font-weight: 800; cursor: pointer; box-shadow: 0 0 22px color-mix(in srgb, var(--destaque) 26%, transparent); }
+.botao-principal:disabled { cursor: wait; opacity: .62; }
+.mensagem { min-height: 22px; margin: 16px 0 0; color: #ff8d8d; text-align: center; line-height: 1.4; }
+.mensagem.sucesso { color: #79e2a6; }
+
+@media (max-width: 520px) {
+    .pagina-login { align-items: end; padding-inline: 12px; }
+    .cartao-login { border-radius: 22px 22px 8px 8px; }
+}
