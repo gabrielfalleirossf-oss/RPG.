@@ -9,14 +9,43 @@ document.addEventListener("pointermove", (evento) => {
 }, { passive: true });
 
 document.querySelectorAll(".campanha").forEach((cartao) => {
-    const selecionar = () => {
+    const selecionar = async () => {
         const nome = cartao.dataset.campanha;
         const aviso = document.querySelector("#aviso-campanha");
-        localStorage.setItem("campanhaSelecionada", nome);
-        aviso.textContent = `${nome} selecionada — a próxima tela será construída agora.`;
+        const rpg = document.body.dataset.rpg;
+        const perfil = document.body.dataset.perfil;
+
+        if (perfil === "mestre") {
+            aviso.textContent = `${nome} selecionada.`;
+            aviso.classList.add("visivel");
+            return;
+        }
+
+        cartao.classList.add("carregando");
+        aviso.textContent = "Procurando seus personagens...";
         aviso.classList.add("visivel");
-        clearTimeout(window.tempoDoAviso);
-        window.tempoDoAviso = setTimeout(() => aviso.classList.remove("visivel"), 3200);
+
+        try {
+            let auth = window.RPG_AUTH;
+            if (!auth) auth = await new Promise((resolve) => document.addEventListener("rpg:auth-pronto", (e) => resolve(e.detail), { once: true }));
+
+            const { data, error } = await auth.cliente
+                .from("personagens")
+                .select("id")
+                .eq("usuario_id", auth.usuario.id)
+                .eq("rpg", rpg)
+                .eq("campanha", nome)
+                .order("criado_em", { ascending: true });
+            if (error) throw error;
+
+            const base = `personagem/index.html?campanha=${encodeURIComponent(nome)}`;
+            if (!data?.length) location.href = `${base}&modo=criar`;
+            else if (nome === "Testes") location.href = `personagens/index.html?campanha=${encodeURIComponent(nome)}`;
+            else location.href = `ficha/index.html?campanha=${encodeURIComponent(nome)}&id=${data[0].id}`;
+        } catch (erro) {
+            aviso.textContent = "Não foi possível abrir a campanha. Tente novamente.";
+            cartao.classList.remove("carregando");
+        }
     };
     cartao.addEventListener("click", selecionar);
     cartao.addEventListener("keydown", (evento) => {
