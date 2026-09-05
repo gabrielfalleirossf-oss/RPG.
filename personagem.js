@@ -66,6 +66,31 @@ async function iniciarFicha(){
   const foto=await urlFoto(data.foto_path),retrato=document.querySelector("#foto-ficha"),vazio=document.querySelector("#retrato-vazio");
   if(foto){retrato.src=foto;retrato.addEventListener("load",()=>vazio.hidden=true,{once:true})}
 
+  let valoresFicha={
+    nivel:data.nivel??0,vida_atual:data.vida_atual??15,vida_max:data.vida_max??15,
+    energia_atual:data.energia_atual??0,energia_max:data.energia_max??0,
+    experiencia:data.experiencia??0,agilidade:data.agilidade??0,forca:data.forca??0,
+    apt_magica:data.apt_magica??0,presenca:data.presenca??0,resistencia:data.resistencia??0,
+    pontos_atributo:data.pontos_atributo??5
+  };
+  aplicarValoresFicha(valoresFicha);
+
+  document.querySelectorAll(".atributo[data-atributo]").forEach(botao=>{
+    botao.addEventListener("click",async()=>{
+      if(valoresFicha.pontos_atributo<=0)return;
+      const campo=botao.dataset.atributo;
+      document.querySelectorAll(".atributo[data-atributo]").forEach(b=>b.disabled=true);
+      mensagem("Salvando ponto de atributo...");
+      const {data:atualizado,error:erroAtributo}=await auth.cliente.from("personagens")
+        .update({[campo]:(valoresFicha[campo]||0)+1})
+        .eq("id",id).eq("usuario_id",auth.usuario.id)
+        .select("nivel,vida_atual,vida_max,energia_atual,energia_max,experiencia,agilidade,forca,apt_magica,presenca,resistencia,pontos_atributo")
+        .single();
+      if(erroAtributo){mensagem(erroAtributo.message.includes("column")?"Execute o arquivo ficha-schema-v2.sql no Supabase antes de distribuir os pontos.":"Não foi possível salvar o atributo.");aplicarValoresFicha(valoresFicha);return}
+      valoresFicha=atualizado;aplicarValoresFicha(valoresFicha);mensagem("Ponto salvo!",true);
+    });
+  });
+
   const lista=document.querySelector("#lista-pericias");
   PERICIAS_FICHA.forEach(([nome,atributo])=>{
     const linha=document.createElement("button");linha.type="button";linha.className="pericia";
@@ -82,6 +107,19 @@ async function iniciarFicha(){
     const modificador=Math.min(99,Math.max(-99,Number(document.querySelector("#modificador-dados").value)||0));
     rolarDados(quantidade,modificador);
   });
+}
+
+function aplicarValoresFicha(valores){
+  const nomes=["agilidade","forca","apt_magica","presenca","resistencia"];
+  nomes.forEach(nome=>{const botao=document.querySelector(`.atributo[data-atributo="${nome}"]`);if(botao){botao.querySelector("strong").textContent=valores[nome]??0;botao.disabled=(valores.pontos_atributo??0)<=0}});
+  const pontos=document.querySelector("#pontos-atributo");
+  if(pontos){pontos.querySelector("strong").textContent=valores.pontos_atributo??0;pontos.classList.toggle("esgotado",(valores.pontos_atributo??0)<=0)}
+  document.querySelector("#nivel-ficha").textContent=valores.nivel??0;
+  document.querySelector("#experiencia-ficha").textContent=`${valores.experiencia??0}%`;
+  document.querySelector("#vida-ficha").textContent=`${valores.vida_atual??15} / ${valores.vida_max??15}`;
+  document.querySelector("#energia-ficha").textContent=`${valores.energia_atual??0} / ${valores.energia_max??0}`;
+  document.querySelector("#barra-vida").style.setProperty("--valor",`${valores.vida_max?Math.max(0,Math.min(100,valores.vida_atual/valores.vida_max*100)):0}%`);
+  document.querySelector("#barra-energia").style.setProperty("--valor",`${valores.energia_max?Math.max(0,Math.min(100,valores.energia_atual/valores.energia_max*100)):0}%`);
 }
 
 function rolarDados(quantidade=1,modificador=0,prefixo=""){
