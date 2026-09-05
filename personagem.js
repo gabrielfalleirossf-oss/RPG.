@@ -4,6 +4,16 @@ const rpg = document.body.dataset.rpg;
 const pagina = document.body.dataset.pagina;
 let auth, personagemCriadoId, personagemSelecionadoId;
 
+const PERICIAS_FICHA = [
+  ["Furtividade", "AGI"], ["Iniciativa", "AGI"],
+  ["Investigação", "APT"], ["Medicina", "APT"],
+  ["Percepção", "PRE"], ["Pontaria", "AGI"],
+  ["Esquiva", "AGI"], ["Bloqueio", "FOR"],
+  ["HtH", "FOR"], ["Esgrima", "AGI"],
+  ["Combate com haste", "FOR"], ["Sobrevivência", "APT"],
+  ["Vontade", "PRE"]
+];
+
 document.documentElement.addEventListener("pointermove",(e)=>{document.documentElement.style.setProperty("--mouse-x",`${e.clientX/innerWidth*100}%`);document.documentElement.style.setProperty("--mouse-y",`${e.clientY/innerHeight*100}%`)},{passive:true});
 
 async function obterAuth(){
@@ -50,7 +60,36 @@ async function iniciarFicha(){
   const id=qs.get("id");if(!id){location.replace(caminho("selecionar"));return}
   const {data,error}=await auth.cliente.from("personagens").select("*").eq("id",id).eq("usuario_id",auth.usuario.id).maybeSingle();
   if(error||!data){document.querySelector("#mensagem").textContent="Personagem não encontrado.";return}
-  document.querySelector("#nome-ficha").textContent=data.nome;document.querySelector("#historia-ficha").textContent=data.historia||"Sem história registrada.";document.querySelector("#personalidade-ficha").textContent=data.personalidade||"Sem descrição.";document.querySelector("#objetivos-ficha").textContent=data.objetivos||"Sem objetivos registrados.";document.querySelector("#anotacoes-ficha").textContent=data.anotacoes||"Sem anotações.";const foto=await urlFoto(data.foto_path);if(foto)document.querySelector("#foto-ficha").src=foto;
+  document.querySelector("#nome-ficha").textContent=data.nome;
+  const nomeJogador=auth.usuario.user_metadata?.nome_exibicao||auth.usuario.user_metadata?.name||auth.usuario.email?.split("@")[0]||"Jogador";
+  document.querySelector("#jogador-ficha").textContent=nomeJogador;
+  const foto=await urlFoto(data.foto_path),retrato=document.querySelector("#foto-ficha"),vazio=document.querySelector("#retrato-vazio");
+  if(foto){retrato.src=foto;retrato.addEventListener("load",()=>vazio.hidden=true,{once:true})}
+
+  const lista=document.querySelector("#lista-pericias");
+  PERICIAS_FICHA.forEach(([nome,atributo])=>{
+    const linha=document.createElement("button");linha.type="button";linha.className="pericia";
+    linha.innerHTML="<span></span><span></span><span>0</span><span>0</span>";
+    linha.children[0].textContent=nome;linha.children[1].textContent=`(${atributo})`;
+    linha.title=`Rolar ${nome}`;
+    linha.addEventListener("click",()=>rolarDados(1,0,`${nome}: `));lista.appendChild(linha);
+  });
+
+  const formDados=document.querySelector("#form-dados");
+  formDados.addEventListener("submit",e=>{
+    e.preventDefault();
+    const quantidade=Math.min(20,Math.max(1,Number(document.querySelector("#quantidade-dados").value)||1));
+    const modificador=Math.min(99,Math.max(-99,Number(document.querySelector("#modificador-dados").value)||0));
+    rolarDados(quantidade,modificador);
+  });
+}
+
+function rolarDados(quantidade=1,modificador=0,prefixo=""){
+  const resultados=Array.from({length:quantidade},()=>Math.floor(Math.random()*20)+1);
+  const total=resultados.reduce((soma,valor)=>soma+valor,0)+modificador;
+  const detalhe=resultados.join(" + ")+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"");
+  const saida=document.querySelector("#resultado-dados");
+  saida.textContent=`${prefixo}${detalhe} = ${total}`;saida.classList.remove("animando");void saida.offsetWidth;saida.classList.add("animando");
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{auth=await obterAuth();document.querySelector(".pagina").hidden=false;if(pagina==="criar")await iniciarCriacao();if(pagina==="selecionar")await iniciarSelecao();if(pagina==="ficha")await iniciarFicha()});
