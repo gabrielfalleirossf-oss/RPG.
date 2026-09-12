@@ -115,7 +115,8 @@ function aplicarValoresFicha(valores){
   const pontos=document.querySelector("#pontos-atributo");
   if(pontos){pontos.querySelector("strong").textContent=valores.pontos_atributo??0;pontos.classList.toggle("esgotado",(valores.pontos_atributo??0)<=0)}
   document.querySelector("#nivel-ficha").textContent=valores.nivel??0;
-  document.querySelector("#experiencia-ficha").textContent=`${valores.experiencia??0}%`;
+  const nivelAtual=valores.nivel??0,proximoXp=100+Math.floor(nivelAtual/5)*10;
+  document.querySelector("#experiencia-ficha").textContent=`${valores.experiencia??0} / ${proximoXp} XP`;
   document.querySelector("#vida-ficha").textContent=`${valores.vida_atual??15} / ${valores.vida_max??15}`;
   document.querySelector("#energia-ficha").textContent=`${valores.energia_atual??0} / ${valores.energia_max??0}`;
   document.querySelector("#barra-vida").style.setProperty("--valor",`${valores.vida_max?Math.max(0,Math.min(100,valores.vida_atual/valores.vida_max*100)):0}%`);

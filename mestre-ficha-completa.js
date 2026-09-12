@@ -13,7 +13,7 @@ function aplicarFichaMestre(p){
   document.querySelector("#nome-ficha").textContent=p.nome;
   document.querySelector("#descricao-nome").textContent=p.nome;
   document.querySelector("#nivel-ficha").textContent=p.nivel??0;
-  document.querySelector("#experiencia-ficha").textContent=`${p.experiencia??0}%`;
+  document.querySelector("#experiencia-ficha").textContent=`${p.experiencia??0} / ${100+Math.floor((p.nivel??0)/5)*10} XP`;
   document.querySelector("#vida-ficha").textContent=`${p.vida_atual??15} / ${p.vida_max??15}`;
   document.querySelector("#energia-ficha").textContent=`${p.energia_atual??0} / ${p.energia_max??0}`;
   document.querySelector("#barra-vida").style.setProperty("--valor",`${p.vida_max?Math.max(0,Math.min(100,(p.vida_atual??0)/p.vida_max*100)):0}%`);

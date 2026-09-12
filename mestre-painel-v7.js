@@ -104,4 +104,6 @@ window.iniciarPainelMestreV7=async function(){
   nav.querySelector("button").classList.add("ativa");
   document.querySelector("#novo-npc").onclick=()=>abrirEditorNpc();document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
   const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)atualizar()},5000);window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
+  await window.iniciarAcoesMestreV8();
 };

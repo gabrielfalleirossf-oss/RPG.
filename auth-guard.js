@@ -35,6 +35,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     window.RPG_AUTH = { cliente, usuario: usuario.user, acesso, rpg, perfil };
     document.dispatchEvent(new CustomEvent("rpg:auth-pronto", { detail: window.RPG_AUTH }));
+    if (perfil === "jogador") {
+        const recados = document.createElement("script");
+        recados.src = `${raizSite}/recados-jogador-v8.js`;
+        recados.onload = () => window.iniciarRecadosJogadorV8?.();
+        document.head.appendChild(recados);
+    }
 
     const nome = document.querySelector("#nome-usuario");
     if (nome) nome.textContent = acesso.nome_exibicao;
