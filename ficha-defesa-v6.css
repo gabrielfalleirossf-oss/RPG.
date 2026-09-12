@@ -1,0 +1,4 @@
+.defesa-pentagrama{position:absolute;right:10px;top:0;z-index:4;width:56px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;pointer-events:none;filter:drop-shadow(0 0 7px rgba(var(--rgb),.4))}
+.defesa-pentagrama svg{position:absolute;inset:0;width:100%;height:100%;fill:#080b10;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.defesa-pentagrama strong{position:relative;font:700 1.05rem var(--display);line-height:1}
+.defesa-pentagrama small{position:relative;margin-top:5px;font:700 .42rem var(--display);text-transform:uppercase}
