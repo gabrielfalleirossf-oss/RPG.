@@ -43,6 +43,13 @@ window.atualizarFichaV5=async function(personagem){
     valores.forEach(v=>{const s=document.createElement("span");s.textContent=String(v);if(v===faces){s.className="resultado-critico";s.title="Crítico! Valor máximo do dado."}resultados.appendChild(s)});
     saida.appendChild(resultados);resumo.classList.toggle("resultado-critico",valores.some(v=>v===faces));
     if(valores.some(v=>v===faces)){const aviso=document.createElement("small");aviso.className="resultado-critico";aviso.textContent="Crítico!";saida.appendChild(aviso)}
+    if(auth.perfil==="jogador"){
+      auth.cliente.from("rolagens_campanha").insert({
+        personagem_id:personagem.id,usuario_id:auth.usuario.id,rpg:personagem.rpg,campanha:personagem.campanha,
+        jogador_nome:auth.acesso.nome_exibicao,personagem_nome:personagem.nome,faces,resultados:valores,
+        total:valores.reduce((a,b)=>a+b,0),origem:prefixo.replace(/: $/,"")||"Dados",critico:valores.some(v=>v===faces)
+      }).then(({error})=>{if(error){const aviso=document.querySelector("#mensagem");aviso.textContent="Rolagem feita, mas não foi salva no histórico. Confira mestre-painel-v7.sql no Supabase.";aviso.classList.remove("sucesso")}}).catch(()=>{document.querySelector("#mensagem").textContent="Sem conexão para salvar esta rolagem no histórico."});
+    }
   }
   document.querySelectorAll("#lista-pericias button.pericia").forEach(botao=>{
     botao.addEventListener("click",evento=>{evento.preventDefault();evento.stopImmediatePropagation();rolar(20,1,botao.querySelector("span").textContent+": ")},{capture:true});

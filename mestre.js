@@ -74,4 +74,4 @@ async function editarPersonagem(){
   });
 }
 
-document.addEventListener("DOMContentLoaded",async()=>{acessoMestre=await obterAcessoMestre();document.querySelector(".pagina-mestre").hidden=false;if(paginaMestre==="lista")await listarPersonagens();if(paginaMestre==="editar")await editarPersonagem()});
+document.addEventListener("DOMContentLoaded",async()=>{acessoMestre=await obterAcessoMestre();document.querySelector(".pagina-mestre").hidden=false;if(paginaMestre==="lista"){await listarPersonagens();const script=document.createElement("script");script.src="../../../mestre-painel-v7.js";script.onload=()=>window.iniciarPainelMestreV7();document.head.appendChild(script)}if(paginaMestre==="editar")await editarPersonagem()});
