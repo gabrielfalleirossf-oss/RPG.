@@ -98,12 +98,19 @@ window.iniciarPainelMestreV7=async function(){
     tab=b.dataset.painel;nav.querySelectorAll("button").forEach(el=>{el.classList.toggle("ativa",el===b);el.setAttribute("aria-pressed",String(el===b))});
     grade.hidden=tab!=="jogadores";escudo.hidden=tab!=="escudo";npcs.hidden=tab!=="npcs";
     cabecalho.querySelector("h1").textContent=tab==="jogadores"?"Fichas dos jogadores":tab==="escudo"?"Escudo do Mestre":"NPCs/Monstros";
-    cabecalho.querySelector("p").textContent=tab==="jogadores"?"Selecione um personagem para abrir a ficha completa.":tab==="escudo"?"Visão da campanha · atualização automática a cada 5 segundos.":"Crie e edite suas criaturas e personagens livremente.";
+    cabecalho.querySelector("p").textContent=tab==="jogadores"?"Selecione um personagem para abrir a ficha completa.":tab==="escudo"?"Visão da campanha · atualização em tempo real.":"Crie e edite suas criaturas e personagens livremente.";
     if(tab==="escudo")await atualizar();if(tab==="npcs")await carregarNpcs();
   });
   nav.querySelector("button").classList.add("ativa");
   document.querySelector("#novo-npc").onclick=()=>abrirEditorNpc();document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
-  const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)atualizar()},5000);window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+  const canalRolagens=auth.cliente.channel("rolagens-mestre-"+rpg+"-"+campanha)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"rolagens_campanha",filter:"rpg=eq."+rpg},payload=>{
+      const nova=payload.new;if(nova?.campanha!==campanha)return;
+      if(!registros.some(registro=>registro.id===nova.id)){registros.unshift(nova);anteriores+=1;if(tab==="escudo")desenharHistorico()}
+    }).subscribe();
+  const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()},3000);
+  document.addEventListener("visibilitychange",()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens)},{once:true});
   await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.iniciarAcoesMestreV8();
 };
