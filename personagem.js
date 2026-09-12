@@ -130,4 +130,5 @@ function rolarDados(quantidade=1,modificador=0,prefixo=""){
   saida.textContent=`${prefixo}${detalhe} = ${total}`;saida.classList.remove("animando");void saida.offsetWidth;saida.classList.add("animando");
 }
 
-document.addEventListener("DOMContentLoaded",async()=>{auth=await obterAuth();document.querySelector(".pagina").hidden=false;if(pagina==="criar")await iniciarCriacao();if(pagina==="selecionar")await iniciarSelecao();if(pagina==="ficha")await iniciarFicha()});
+async function carregarRecursosDaFicha(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
+document.addEventListener("DOMContentLoaded",async()=>{auth=await obterAuth();document.querySelector(".pagina").hidden=false;if(pagina==="criar")await iniciarCriacao();if(pagina==="selecionar")await iniciarSelecao();if(pagina==="ficha"){await iniciarFicha();await carregarRecursosDaFicha()}});

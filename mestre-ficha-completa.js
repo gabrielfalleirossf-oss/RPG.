@@ -48,4 +48,5 @@ async function iniciarFichaMestre(){
   mestrePersonagem=data;aplicarFichaMestre(data);const foto=await fotoFichaMestre(data.foto_path);if(foto){const img=document.querySelector("#foto-ficha");img.src=foto;img.addEventListener("load",()=>document.querySelector("#retrato-vazio").hidden=true,{once:true})}
 }
 document.documentElement.addEventListener("pointermove",e=>{document.documentElement.style.setProperty("--mouse-x",`${e.clientX/innerWidth*100}%`);document.documentElement.style.setProperty("--mouse-y",`${e.clientY/innerHeight*100}%`)},{passive:true});
-document.addEventListener("DOMContentLoaded",async()=>{mestreAuth=await aguardarAuthMestre();configurarInterfaceMestre();montarPericiasMestre();await iniciarFichaMestre()});
+async function carregarRecursosDaFichaMestre(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
+document.addEventListener("DOMContentLoaded",async()=>{mestreAuth=await aguardarAuthMestre();configurarInterfaceMestre();montarPericiasMestre();await iniciarFichaMestre();await carregarRecursosDaFichaMestre()});
