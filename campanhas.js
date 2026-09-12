@@ -16,8 +16,9 @@ document.querySelectorAll(".campanha").forEach((cartao) => {
         const perfil = document.body.dataset.perfil;
 
         if (perfil === "mestre") {
-            aviso.textContent = `${nome} selecionada.`;
+            aviso.textContent = `Abrindo os personagens de ${nome}...`;
             aviso.classList.add("visivel");
+            location.href = `personagens/index.html?campanha=${encodeURIComponent(nome)}`;
             return;
         }
 
