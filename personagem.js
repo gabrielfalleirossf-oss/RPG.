@@ -74,6 +74,10 @@ async function iniciarFicha(){
     pontos_atributo:data.pontos_atributo??5
   };
   aplicarValoresFicha(valoresFicha);
+  window.addEventListener("rpg:ficha-atualizada",evento=>{
+    const atualizada=evento.detail;if(atualizada?.id!==id)return;
+    valoresFicha={...valoresFicha,...atualizada};aplicarValoresFicha(valoresFicha);
+  });
 
   document.querySelectorAll(".atributo[data-atributo]").forEach(botao=>{
     botao.addEventListener("click",async()=>{
