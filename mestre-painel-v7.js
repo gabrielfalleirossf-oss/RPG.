@@ -28,7 +28,7 @@ window.iniciarPainelMestreV7=async function(){
     const attrs=document.createElement("div");attrs.className="resumo-atributos";atributos.forEach(([campo,label])=>{const cel=document.createElement("div");cel.append(texto("small",label),texto("strong",p[campo]??0));attrs.appendChild(cel)});card.appendChild(attrs);
     card.append(barra("Vida",p.vida_atual??15,p.vida_max??15,"vida"),barra("Energia Mágica",p.energia_atual??0,p.energia_max??0,"energia"),barra("Sanidade",p.sanidade_atual??100,p.sanidade_max??100,"sanidade"));
     card.appendChild(texto("p","Defesa "+(p.defesa??10),"resumo-defesa"));
-    if(npc){const b=texto("button","Abrir ficha e descrição →");b.type="button";b.onclick=()=>abrirEditorNpc(p);card.appendChild(b)}
+    if(npc){const b=texto("a","Abrir ficha →");b.href="../npc/ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;card.appendChild(b)}
     else{const a=texto("a","Abrir ficha →");a.href="../ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;card.appendChild(a)}
     return card;
   }
@@ -104,7 +104,7 @@ window.iniciarPainelMestreV7=async function(){
     if(tab==="escudo")await atualizar();if(tab==="npcs")await carregarNpcs();
   });
   nav.querySelector("button").classList.add("ativa");
-  document.querySelector("#novo-npc").onclick=()=>abrirEditorNpc();document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
+  document.querySelector("#novo-npc").onclick=()=>location.href="../npc/index.html?campanha="+encodeURIComponent(campanha);document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
   const canalRolagens=auth.cliente.channel("rolagens-mestre-"+rpg+"-"+campanha)
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"rolagens_campanha",filter:"rpg=eq."+rpg},payload=>{
       const nova=payload.new;if(nova?.campanha!==campanha)return;
