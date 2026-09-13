@@ -72,17 +72,19 @@ window.iniciarPainelMestreV7=async function(){
       if(nome==="nome"){input.required=true;input.maxLength=100}
       input.value=p[nome]??padrao;wrap.appendChild(input);campos.appendChild(wrap);return input;
     }
-    campo("nome","Nome");campo("tipo","Tipo","select","NPC");const arquivo=campo("foto","Imagem","file");arquivo.accept="image/png,image/jpeg,image/webp";
+    campo("nome","Nome");campo("tipo","Tipo","select","NPC");const arquivo=campo("foto","Imagem","file");arquivo.accept="image/png,image/jpeg,image/webp";campo("nivel","Nível","number",0);
     campo("descricao","Descrição, história e personalidade","textarea","",true);
     atributos.forEach(([nome,label])=>campo(nome,{"AGI":"Agilidade","FOR":"Força","APT":"Apt. Mágica","PRE":"Presença","RES":"Resistência"}[label],"number",0));
     for(const [nome,label,valor] of [["defesa","Defesa",10],["vida_atual","Vida atual",15],["vida_max","Vida máxima",15],["energia_atual","Energia atual",0],["energia_max","Energia máxima",0],["sanidade_atual","Sanidade atual",100],["sanidade_max","Sanidade máxima",100]])campo(nome,label,"number",valor);
     campo("ficha_livre","Ficha livre: ataques, habilidades, resistências, itens e notas","textarea","",true);
+    const abasExtras=document.createElement("nav");abasExtras.className="npc-extras-abas";abasExtras.innerHTML='<button type="button" data-extra="ficha" class="ativa">Ficha</button><button type="button" data-extra="drops">Drops</button><button type="button" data-extra="xp">XP</button>';form.insertBefore(abasExtras,campos);
+    const extras=document.createElement("section");extras.className="npc-extras";extras.hidden=true;extras.innerHTML='<div class="npc-extra-painel" data-painel="drops"><label>Drops ao morrer<textarea name="drops" maxlength="5000" placeholder="Um item ou recompensa por linha"></textarea></label></div><div class="npc-extra-painel" data-painel="xp" hidden><label>XP concedido ao morrer<input name="xp_recompensa" type="number" min="0" step="1" value="0"></label><p>A recompensa será usada quando a finalização do confronto for implementada.</p></div>';form.appendChild(extras);extras.querySelector('[name="drops"]').value=p.drops||"";extras.querySelector('[name="xp_recompensa"]').value=p.xp_recompensa??0;abasExtras.querySelectorAll("[data-extra]").forEach(b=>b.onclick=()=>{abasExtras.querySelectorAll("[data-extra]").forEach(x=>x.classList.toggle("ativa",x===b));campos.hidden=b.dataset.extra!=="ficha";extras.hidden=b.dataset.extra==="ficha";extras.querySelectorAll("[data-painel]").forEach(x=>x.hidden=x.dataset.painel!==b.dataset.extra)});
     const status=texto("p","","npc-status");form.appendChild(status);const footer=document.createElement("footer"),salvar=texto("button","Salvar ficha");salvar.type="submit";footer.appendChild(salvar);form.appendChild(footer);
     form.onsubmit=async e=>{
       e.preventDefault();salvar.disabled=true;status.textContent="Salvando...";
       try{
-        const registro={rpg,campanha,nome:form.elements.nome.value.trim(),tipo:form.elements.tipo.value,descricao:form.elements.descricao.value,ficha_livre:form.elements.ficha_livre.value};
-        ["agilidade","forca","apt_magica","presenca","resistencia","defesa","vida_atual","vida_max","energia_atual","energia_max","sanidade_atual","sanidade_max"].forEach(c=>registro[c]=Number(form.elements[c].value)||0);
+        const registro={rpg,campanha,nome:form.elements.nome.value.trim(),tipo:form.elements.tipo.value,descricao:form.elements.descricao.value,ficha_livre:form.elements.ficha_livre.value,drops:form.elements.drops.value.trim(),xp_recompensa:Number(form.elements.xp_recompensa.value)||0};
+        ["nivel","agilidade","forca","apt_magica","presenca","resistencia","defesa","vida_atual","vida_max","energia_atual","energia_max","sanidade_atual","sanidade_max"].forEach(c=>registro[c]=Number(form.elements[c].value)||0);
         if(arquivo.files[0]){
           const f=arquivo.files[0];if(f.size>5242880||!["image/png","image/jpeg","image/webp"].includes(f.type))throw Error("Use PNG, JPG ou WEBP de até 5 MB.");
           const path=auth.usuario.id+"/"+rpg+"/npcs/"+crypto.randomUUID()+"."+({"image/png":"png","image/jpeg":"jpg","image/webp":"webp"}[f.type]);
