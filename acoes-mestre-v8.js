@@ -33,8 +33,20 @@ window.iniciarAcoesMestreV8=async function(){
  }
  function mostrarMenu(d,selecionados){
   const area=d.querySelector("#conteudo-acoes");status(d,selecionados.length+" selecionado(s)");
-  area.innerHTML='<section class="menu-acoes"><h3>O que deseja fazer?</h3><div><button data-acao="recado">✉<span>Dar um recado</span></button><button data-acao="habilidade">✦<span>Adicionar habilidade</span></button><button data-acao="item">◇<span>Adicionar item</span></button><button data-acao="xp">↑<span>Upar level/XP</span></button><button data-acao="confronto" disabled>⚔<span>Adicionar confronto<small>Em breve</small></span></button></div></section>';
-  area.querySelectorAll("[data-acao]:not(:disabled)").forEach(b=>b.onclick=()=>mostrarFormulario(d,selecionados,b.dataset.acao));
+  area.innerHTML='<section class="menu-acoes"><h3>O que deseja fazer?</h3><div><button data-acao="recado">✉<span>Dar um recado</span></button><button data-acao="habilidade">✦<span>Adicionar habilidade</span></button><button data-acao="item">◇<span>Adicionar item</span></button><button data-acao="xp">↑<span>Upar level/XP</span></button><button data-acao="confronto">⚔<span>Adicionar confronto</span></button></div></section>';
+  area.querySelectorAll("[data-acao]").forEach(b=>b.onclick=()=>b.dataset.acao==="confronto"?mostrarConfronto(d,selecionados):mostrarFormulario(d,selecionados,b.dataset.acao));
+ }
+ async function mostrarConfronto(d,selecionados){
+  if(selecionados.length!==1){status(d,"Para iniciar um confronto, selecione exatamente um personagem na primeira etapa.",true);return}
+  const principal=selecionados[0],area=d.querySelector("#conteudo-acoes");area.innerHTML='<section class="selecao-jogadores"><button class="voltar-menu" type="button">← Voltar</button><h3>Quem enfrentará '+principal.nome+'?</h3><p>Escolha outro personagem, NPC ou monstro desta campanha.</p><div class="lista-selecao" id="oponentes-confronto"></div><button id="iniciar-confronto" type="button">Iniciar confronto</button></section>';area.querySelector(".voltar-menu").onclick=()=>mostrarMenu(d,selecionados);status(d,"Carregando oponentes...");
+  const [{data:personagens,error:erroP},{data:npcs,error:erroN}]=await Promise.all([
+   auth.cliente.from("personagens").select("id,nome,nivel").eq("rpg",rpg).eq("campanha",campanha).neq("id",principal.id).order("nome"),
+   auth.cliente.from("npcs_monstros").select("id,nome,tipo").eq("rpg",rpg).eq("campanha",campanha).order("nome")
+  ]);if(erroP||erroN){status(d,(erroP||erroN).message,true);return}
+  const lista=area.querySelector("#oponentes-confronto"),oponentes=[...(personagens||[]).map(p=>({...p,tipo_oponente:"personagem",subtitulo:"Personagem · Nível "+(p.nivel??0)})),...(npcs||[]).map(n=>({...n,tipo_oponente:"npc",subtitulo:n.tipo}))];
+  if(!oponentes.length){lista.textContent="Não há outro personagem, NPC ou monstro disponível.";area.querySelector("#iniciar-confronto").disabled=true}
+  oponentes.forEach((p,i)=>{const label=document.createElement("label");label.className="jogador-selecao";const input=document.createElement("input");input.type="radio";input.name="oponente";input.value=p.id;input.dataset.tipo=p.tipo_oponente;if(i===0)input.checked=true;const div=document.createElement("div"),strong=document.createElement("strong"),span=document.createElement("span");strong.textContent=p.nome;span.textContent=p.subtitulo;div.append(strong,span);label.append(input,div);lista.appendChild(label)});status(d,"");
+  area.querySelector("#iniciar-confronto").onclick=async()=>{const escolhido=lista.querySelector("input:checked");if(!escolhido){status(d,"Escolha um oponente.",true);return}const botao=area.querySelector("#iniciar-confronto");botao.disabled=true;status(d,"Preparando confronto...");const {data:id,error}=await auth.cliente.rpc("iniciar_confronto_mestre",{ficha_principal:principal.id,tipo_oponente:escolhido.dataset.tipo,oponente_id:escolhido.value});if(error){status(d,error.message,true);botao.disabled=false;return}const url="../confronto/index.html?campanha="+encodeURIComponent(campanha)+"&confronto="+id;window.open(url,"_blank","noopener");status(d,"Confronto iniciado! A ficha foi aberta em uma nova guia.");setTimeout(()=>d.close(),900)};
  }
  function formularioBase(titulo,campos){
   return '<form class="form-acao"><button class="voltar-menu" type="button">← Voltar</button><h3>'+titulo+'</h3>'+campos+'<button class="confirmar-acao" type="submit">Confirmar</button></form>';

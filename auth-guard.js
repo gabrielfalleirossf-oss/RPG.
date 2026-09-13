@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         recados.src = `${raizSite}/recados-jogador-v8.js`;
         recados.onload = () => window.iniciarRecadosJogadorV8?.();
         document.head.appendChild(recados);
+        const confrontos = document.createElement("script");
+        confrontos.src = `${raizSite}/confronto-jogador-v9.js`;
+        confrontos.onload = () => window.iniciarConfrontosJogadorV9?.();
+        document.head.appendChild(confrontos);
     }
 
     const nome = document.querySelector("#nome-usuario");
