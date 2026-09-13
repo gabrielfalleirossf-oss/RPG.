@@ -28,7 +28,11 @@ window.iniciarPainelMestreV7=async function(){
     const attrs=document.createElement("div");attrs.className="resumo-atributos";atributos.forEach(([campo,label])=>{const cel=document.createElement("div");cel.append(texto("small",label),texto("strong",p[campo]??0));attrs.appendChild(cel)});card.appendChild(attrs);
     card.append(barra("Vida",p.vida_atual??15,p.vida_max??15,"vida"),barra("Energia Mágica",p.energia_atual??0,p.energia_max??0,"energia"),barra("Sanidade",p.sanidade_atual??100,p.sanidade_max??100,"sanidade"));
     card.appendChild(texto("p","Defesa "+(p.defesa??10),"resumo-defesa"));
-    if(npc){const b=texto("a","Abrir ficha →");b.href="../npc/ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;card.appendChild(b)}
+    if(npc){
+      const acoes=document.createElement("div");acoes.className="acoes-cartao-npc";const b=texto("a","Abrir ficha →");b.href="../npc/ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;
+      const apagar=texto("button","Apagar");apagar.type="button";apagar.className="apagar-npc";apagar.onclick=async()=>{if(!confirm(`Apagar ${p.nome}? Esta ação não poderá ser desfeita.`))return;apagar.disabled=true;const{error}=await auth.cliente.from("npcs_monstros").delete().eq("id",p.id).eq("rpg",rpg);if(error){aviso("Não foi possível apagar: "+error.message);apagar.disabled=false;return}if(p.foto_path)await auth.cliente.storage.from("personagens").remove([p.foto_path]);card.remove();aviso(`${p.nome} foi apagado.`,true)};
+      acoes.append(b,apagar);card.appendChild(acoes)
+    }
     else{const a=texto("a","Abrir ficha →");a.href="../ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;card.appendChild(a)}
     return card;
   }

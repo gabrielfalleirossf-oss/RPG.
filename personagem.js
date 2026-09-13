@@ -51,7 +51,19 @@ async function iniciarSelecao(){
   const {data,error}=await auth.cliente.from("personagens").select("id,nome,foto_path,criado_em").eq("usuario_id",auth.usuario.id).eq("rpg",rpg).eq("campanha",campanha).order("criado_em");
   if(error){grade.innerHTML='<p class="vazio">Não foi possível carregar seus personagens.</p>';return}
   if(!data.length){location.replace(caminho("criar"));return}
-  for(const p of data){const foto=await urlFoto(p.foto_path);const card=document.createElement("article");card.className="cartao-personagem";card.tabIndex=0;card.dataset.id=p.id;card.innerHTML=`${foto?`<img class="foto-cartao" src="${foto}" alt="Foto de ${p.nome}">`:`<div class="foto-cartao"></div>`}<div class="cartao-conteudo"><h2></h2><p>Perfil de teste</p><span class="status">Selecionado</span><button class="botao" type="button">Selecionar</button></div>`;card.querySelector("h2").textContent=p.nome;const selecionar=()=>{document.querySelectorAll(".cartao-personagem").forEach(c=>c.classList.remove("selecionado"));card.classList.add("selecionado");personagemSelecionadoId=p.id;document.querySelector("#entrar-campanha").disabled=false};card.addEventListener("click",selecionar);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selecionar()}});grade.appendChild(card)}
+  for(const p of data){
+    const foto=await urlFoto(p.foto_path),card=document.createElement("article");card.className="cartao-personagem";card.tabIndex=0;card.dataset.id=p.id;
+    card.innerHTML=`${foto?`<img class="foto-cartao" src="${foto}" alt="Foto de ${p.nome}">`:`<div class="foto-cartao"></div>`}<div class="cartao-conteudo"><h2></h2><p>Perfil de teste</p><span class="status">Selecionado</span><button class="botao" type="button">Selecionar</button></div>`;
+    card.querySelector("h2").textContent=p.nome;
+    const selecionar=()=>{document.querySelectorAll(".cartao-personagem").forEach(c=>c.classList.remove("selecionado"));card.classList.add("selecionado");personagemSelecionadoId=p.id;document.querySelector("#entrar-campanha").disabled=false};
+    card.addEventListener("click",selecionar);card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selecionar()}});
+    if(campanha==="Testes"){
+      const apagar=document.createElement("button");apagar.type="button";apagar.className="apagar-personagem";apagar.title="Apagar personagem";apagar.setAttribute("aria-label",`Apagar ${p.nome}`);apagar.textContent="🗑";
+      apagar.addEventListener("click",async e=>{e.preventDefault();e.stopPropagation();if(!confirm(`Apagar ${p.nome}? Esta ação não poderá ser desfeita.`))return;apagar.disabled=true;mensagem("Apagando personagem...");const{error:erroApagar}=await auth.cliente.from("personagens").delete().eq("id",p.id).eq("usuario_id",auth.usuario.id).eq("campanha","Testes");if(erroApagar){mensagem("Não foi possível apagar: "+erroApagar.message);apagar.disabled=false;return}if(p.foto_path)await auth.cliente.storage.from("personagens").remove([p.foto_path]);card.remove();if(personagemSelecionadoId===p.id){personagemSelecionadoId=null;document.querySelector("#entrar-campanha").disabled=true}mensagem(`${p.nome} foi apagado.`,true);if(!grade.querySelector(".cartao-personagem:not(.novo)"))location.replace(caminho("criar"))});
+      card.appendChild(apagar);
+    }
+    grade.appendChild(card);
+  }
   const novo=document.createElement("article");novo.className="cartao-personagem novo";novo.tabIndex=0;novo.innerHTML='<div><div class="mais">+</div><div class="cartao-conteudo"><h2>Novo personagem</h2><p>Crie outro herói para experimentar a campanha</p><button class="botao" type="button">Criar personagem</button></div></div>';novo.addEventListener("click",()=>location.href=caminho("criar"));grade.appendChild(novo);
   document.querySelector("#entrar-campanha").addEventListener("click",()=>{if(personagemSelecionadoId)location.href=caminho("ficha",personagemSelecionadoId)});
 }
