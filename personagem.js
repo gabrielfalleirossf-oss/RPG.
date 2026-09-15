@@ -163,5 +163,5 @@ function rolarDados(quantidade=1,modificador=0,prefixo=""){
   saida.textContent=`${prefixo}${detalhe} = ${total}`;saida.classList.remove("animando");void saida.offsetWidth;saida.classList.add("animando");
 }
 
-async function carregarRecursosDaFicha(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css?v=18";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js?v=18";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
+async function carregarRecursosDaFicha(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css?v=19";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js?v=19";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
 document.addEventListener("DOMContentLoaded",async()=>{auth=await obterAuth();document.querySelector(".pagina").hidden=false;if(pagina==="criar")await iniciarCriacao();if(pagina==="selecionar")await iniciarSelecao();if(pagina==="ficha"){await iniciarFicha();await carregarRecursosDaFicha()}});

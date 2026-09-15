@@ -1,5 +1,5 @@
 window.atualizarFichaV5=async function(personagem){
-  const css=document.createElement("link");css.rel="stylesheet";css.href="../../../ficha-dados-v5.css?v=18";document.head.appendChild(css);
+  const css=document.createElement("link");css.rel="stylesheet";css.href="../../../ficha-dados-v5.css?v=19";document.head.appendChild(css);
   const cssDefesa=document.createElement("link");cssDefesa.rel="stylesheet";cssDefesa.href="../../../ficha-defesa-v6.css";document.head.appendChild(cssDefesa);
   const auth=window.RPG_AUTH;
   const origem=window.RPG_ORIGENS?.[personagem.origem]||{atributos:{}};
