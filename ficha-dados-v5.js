@@ -1,5 +1,5 @@
 window.atualizarFichaV5=async function(personagem){
-  const css=document.createElement("link");css.rel="stylesheet";css.href="../../../ficha-dados-v5.css";document.head.appendChild(css);
+  const css=document.createElement("link");css.rel="stylesheet";css.href="../../../ficha-dados-v5.css?v=18";document.head.appendChild(css);
   const cssDefesa=document.createElement("link");cssDefesa.rel="stylesheet";cssDefesa.href="../../../ficha-defesa-v6.css";document.head.appendChild(cssDefesa);
   const auth=window.RPG_AUTH;
   const origem=window.RPG_ORIGENS?.[personagem.origem]||{atributos:{}};
@@ -41,10 +41,10 @@ window.atualizarFichaV5=async function(personagem){
   function rolar(faces,quantidade,prefixo="",modificador=0){
     const valores=Array.from({length:quantidade},()=>Math.floor(Math.random()*faces)+1),saida=novo.querySelector("#resultado-dados");
     const total=valores.reduce((a,b)=>a+b,0)+modificador;
-    saida.replaceChildren();const resumo=document.createElement("div");resumo.textContent=prefixo+quantidade+"D"+faces+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"")+" · Total: "+total;saida.appendChild(resumo);
-    const resultados=document.createElement("div");resultados.className="resultados-individuais";
-    valores.forEach(v=>{const s=document.createElement("span");s.textContent=String(v);if(v===faces){s.className="resultado-critico";s.title="Crítico! Valor máximo do dado."}resultados.appendChild(s)});
-    saida.appendChild(resultados);resumo.classList.toggle("resultado-critico",valores.some(v=>v===faces));
+    const critico=valores.some(v=>v===faces),expressao=valores.join(" + ")+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"");
+    saida.replaceChildren();const resumo=document.createElement("div");resumo.className="expressao-rolagem";resumo.textContent=prefixo+expressao;saida.appendChild(resumo);
+    const soma=document.createElement("div");soma.className="total-rolagem";soma.textContent="Total: "+total;saida.appendChild(soma);
+    resumo.classList.toggle("resultado-critico",critico);soma.classList.toggle("resultado-critico",critico);
     if(valores.some(v=>v===faces)){const aviso=document.createElement("small");aviso.className="resultado-critico";aviso.textContent="Crítico!";saida.appendChild(aviso)}
     if(auth.perfil==="jogador"){
       auth.cliente.from("rolagens_campanha").insert({
