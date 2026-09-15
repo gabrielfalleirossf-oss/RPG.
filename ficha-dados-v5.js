@@ -2,9 +2,11 @@ window.atualizarFichaV5=async function(personagem){
   const css=document.createElement("link");css.rel="stylesheet";css.href="../../../ficha-dados-v5.css";document.head.appendChild(css);
   const cssDefesa=document.createElement("link");cssDefesa.rel="stylesheet";cssDefesa.href="../../../ficha-defesa-v6.css";document.head.appendChild(cssDefesa);
   const auth=window.RPG_AUTH;
+  const origem=window.RPG_ORIGENS?.[personagem.origem]||{atributos:{}};
   const {data:nome,error}=await auth.cliente.rpc("nome_jogador_da_ficha",{ficha_id:personagem.id});
   document.querySelector("#jogador-ficha").textContent=nome||(!error&&auth.usuario.id===personagem.usuario_id?auth.acesso.nome_exibicao:"Nome indisponível — atualize o SQL");
-  document.querySelectorAll(".identidade-dados div").forEach(div=>{if(div.querySelector("dt")?.textContent.trim().toLowerCase()==="classe")div.querySelector("dd").textContent="Desconhecida"});
+  document.querySelectorAll(".identidade-dados div").forEach(div=>{const campo=div.querySelector("dt")?.textContent.trim().toLowerCase();if(campo==="classe")div.querySelector("dd").textContent="Desconhecida";if(campo==="origem")div.querySelector("dd").textContent=personagem.origem||"Desconhecida"});
+  ["agilidade","forca","apt_magica","presenca","resistencia"].forEach(campo=>{const valor=document.querySelector(`.atributo[data-atributo="${campo}"] strong`);if(valor)valor.textContent=(Number(personagem[campo])||0)+(Number(origem.atributos?.[campo])||0)});
   const energia=document.querySelector(".recurso.energia");
   if(!document.querySelector("#sanidade-ficha")){
     const sanidade=document.createElement("div");sanidade.className="recurso sanidade";
@@ -36,9 +38,10 @@ window.atualizarFichaV5=async function(personagem){
   Object.entries(geometrias).forEach(([faces,svg])=>{const b=document.createElement("button");b.type="button";b.className="dado-escolha";b.setAttribute("aria-label","Rolar um D"+faces);b.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true">'+svg+'</svg><span>D'+faces+'</span>';b.onclick=()=>rolar(Number(faces),1);seletor.appendChild(b)});
   const personalizado=document.createElement("button");personalizado.type="button";personalizado.className="dado-escolha";personalizado.setAttribute("aria-label","Dados personalizados");personalizado.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 5 91 28v44L50 95 9 72V28Z"/><path d="M50 30v40M30 50h40"/></svg><span>Personalizado</span>';seletor.appendChild(personalizado);
   anterior.replaceWith(novo);
-  function rolar(faces,quantidade,prefixo=""){
+  function rolar(faces,quantidade,prefixo="",modificador=0){
     const valores=Array.from({length:quantidade},()=>Math.floor(Math.random()*faces)+1),saida=novo.querySelector("#resultado-dados");
-    saida.replaceChildren();const resumo=document.createElement("div");resumo.textContent=prefixo+quantidade+"D"+faces+" · Total: "+valores.reduce((a,b)=>a+b,0);saida.appendChild(resumo);
+    const total=valores.reduce((a,b)=>a+b,0)+modificador;
+    saida.replaceChildren();const resumo=document.createElement("div");resumo.textContent=prefixo+quantidade+"D"+faces+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"")+" · Total: "+total;saida.appendChild(resumo);
     const resultados=document.createElement("div");resultados.className="resultados-individuais";
     valores.forEach(v=>{const s=document.createElement("span");s.textContent=String(v);if(v===faces){s.className="resultado-critico";s.title="Crítico! Valor máximo do dado."}resultados.appendChild(s)});
     saida.appendChild(resultados);resumo.classList.toggle("resultado-critico",valores.some(v=>v===faces));
@@ -52,7 +55,7 @@ window.atualizarFichaV5=async function(personagem){
     }
   }
   document.querySelectorAll("#lista-pericias button.pericia").forEach(botao=>{
-    botao.addEventListener("click",evento=>{evento.preventDefault();evento.stopImmediatePropagation();rolar(20,1,botao.querySelector("span").textContent+": ")},{capture:true});
+    botao.addEventListener("click",evento=>{evento.preventDefault();evento.stopImmediatePropagation();const bonus=Number(botao.children[2]?.textContent)||0;rolar(20,1,botao.querySelector("span").textContent+": ",bonus)},{capture:true});
   });
   const dialog=document.createElement("dialog");dialog.className="modal-recurso";
   dialog.innerHTML='<form><header><h2>Dados personalizados</h2><button type="button" aria-label="Fechar">×</button></header><label>Quantidade de dados<input name="quantidade" type="number" min="1" max="100" value="1" required></label><label>Faces de cada dado<input name="faces" type="number" min="2" max="1000" value="20" required></label><footer><button class="botao principal" type="submit">Rolar dados</button></footer></form>';

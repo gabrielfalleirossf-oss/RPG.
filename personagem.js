@@ -4,6 +4,15 @@ const rpg = document.body.dataset.rpg;
 const pagina = document.body.dataset.pagina;
 let auth, personagemCriadoId, personagemSelecionadoId;
 
+const ORIGENS = {
+  Nerd:{imagem:"../../../assets/origens/nerd.png",descricao:"Um jovem extremamente focado nos estudos. Sua busca incansável por conhecimento cobrou um preço: alimentação ruim, nenhuma atividade física e um corpo pouco saudável.",pericias:{Medicina:2,"Sobrevivência":1,"Percepção":3,"Investigação":1},atributos:{presenca:3,apt_magica:2,forca:-2,agilidade:-2,resistencia:-2}},
+  Lutador:{imagem:"../../../assets/origens/lutador.png",descricao:"Desde cedo encontrou sua paixão nas artes marciais e fez do treino uma obsessão. Seu corpo tornou-se uma arma letal e um escudo impenetrável, mas seu crescente ceticismo o fez acreditar que tudo pode ser resolvido com os punhos.",pericias:{Esquiva:2,HtH:3,Bloqueio:2},atributos:{agilidade:2,forca:1,apt_magica:-4}},
+  Bodybuilder:{imagem:"../../../assets/origens/bodybuilder.png",descricao:"Encontrou na academia sua própria forma de superação. Treina de maneira obstinada, transformando o corpo enquanto ignora dores e articulações sobrecarregadas. Não acredita no sobrenatural: acredita apenas em si mesmo.",pericias:{Bloqueio:3,Vontade:3,Iniciativa:1},atributos:{forca:3,resistencia:2,agilidade:-2,apt_magica:-3}}
+};
+window.RPG_ORIGENS=ORIGENS;
+function dadosOrigem(nome){return ORIGENS[nome]||{pericias:{},atributos:{}}}
+function valorComOrigem(valores,campo){return (Number(valores[campo])||0)+(Number(dadosOrigem(valores.origem).atributos[campo])||0)}
+
 const PERICIAS_FICHA = [
   ["Furtividade", "AGI"], ["Iniciativa", "AGI"],
   ["Investigação", "APT"], ["Medicina", "APT"],
@@ -29,15 +38,20 @@ async function urlFoto(path){if(!path)return null;const {data}=await auth.client
 
 async function iniciarCriacao(){
   document.querySelector("#campanha-atual").textContent=campanha;
-  const form=document.querySelector("#form-personagem"),arquivo=document.querySelector("#foto"),preview=document.querySelector("#preview"),upload=document.querySelector(".upload"),irFicha=document.querySelector("#ir-ficha");
+  const form=document.querySelector("#form-personagem"),arquivo=document.querySelector("#foto"),preview=document.querySelector("#preview"),upload=document.querySelector(".upload"),irFicha=document.querySelector("#ir-ficha");let origemSelecionada="";
+  const origemArea=document.createElement("section");origemArea.className="selecao-origem campo largo";origemArea.innerHTML='<header><label>Origem do personagem</label><p>Escolha uma origem para conhecer sua história e seus modificadores.</p></header><div class="grade-origens"></div>';
+  form.querySelector(".campos").insertBefore(origemArea,form.querySelector(".campo.historia"));
+  const formatarBonus=o=>[...Object.entries(o.pericias).map(([n,v])=>`${v>0?"+":""}${v} ${n}`),...Object.entries(o.atributos).map(([n,v])=>`${v>0?"+":""}${v} ${n.replace("apt_magica","Apt. Mágica")}`)].join(" · ");
+  Object.entries(ORIGENS).forEach(([nome,o])=>{const b=document.createElement("button");b.type="button";b.className="cartao-origem";b.innerHTML=`<img src="${o.imagem}" alt=""><span><strong>${nome}</strong><small></small><em></em></span>`;b.querySelector("small").textContent=o.descricao;b.querySelector("em").textContent=formatarBonus(o);b.onclick=()=>{origemSelecionada=nome;origemArea.querySelectorAll(".cartao-origem").forEach(x=>x.classList.toggle("selecionada",x===b))};origemArea.querySelector(".grade-origens").appendChild(b)});
   arquivo.addEventListener("change",()=>{const f=arquivo.files[0];if(!f)return;if(f.size>5*1024*1024){mensagem("A imagem precisa ter no máximo 5 MB.");arquivo.value="";return}preview.src=URL.createObjectURL(f);upload.classList.add("tem-foto")});
   document.querySelectorAll("textarea[maxlength]").forEach(el=>{const out=el.parentElement.querySelector(".contador");const atualizar=()=>out.textContent=`${el.value.length}/${el.maxLength}`;el.addEventListener("input",atualizar);atualizar()});
   form.addEventListener("submit",async e=>{
     e.preventDefault();mensagem("");const salvar=document.querySelector("#criar-personagem");salvar.disabled=true;salvar.textContent="Criando...";
     try{
+      if(!origemSelecionada)throw Error("Escolha uma origem para o personagem.");
       const id=crypto.randomUUID();let fotoPath=null;const foto=arquivo.files[0];
       if(foto){const ext=(foto.name.split(".").pop()||"jpg").toLowerCase();fotoPath=`${auth.usuario.id}/${rpg}/${campanha}/${id}.${ext}`;const {error}=await auth.cliente.storage.from("personagens").upload(fotoPath,foto,{upsert:false});if(error)throw error}
-      const registro={id,usuario_id:auth.usuario.id,rpg,campanha,nome:form.nome.value.trim(),historia:form.historia.value.trim(),personalidade:form.personalidade.value.trim(),objetivos:form.objetivos.value.trim(),anotacoes:form.anotacoes.value.trim(),foto_path:fotoPath};
+      const registro={id,usuario_id:auth.usuario.id,rpg,campanha,origem:origemSelecionada,nome:form.nome.value.trim(),historia:form.historia.value.trim(),personalidade:form.personalidade.value.trim(),objetivos:form.objetivos.value.trim(),anotacoes:form.anotacoes.value.trim(),foto_path:fotoPath};
       const {error}=await auth.cliente.from("personagens").insert(registro);if(error)throw error;
       personagemCriadoId=id;irFicha.disabled=false;mensagem("Personagem criado com sucesso!",true);salvar.textContent="Personagem criado";
     }catch(err){mensagem(err.message||"Não foi possível criar o personagem.");salvar.disabled=false;salvar.textContent="Criar personagem"}
@@ -73,6 +87,7 @@ async function iniciarFicha(){
   const {data,error}=await auth.cliente.from("personagens").select("*").eq("id",id).eq("usuario_id",auth.usuario.id).maybeSingle();
   if(error||!data){document.querySelector("#mensagem").textContent="Personagem não encontrado.";return}
   document.querySelector("#nome-ficha").textContent=data.nome;
+  document.querySelectorAll(".identidade-dados div").forEach(div=>{if(div.querySelector("dt")?.textContent.trim()==="Origem")div.querySelector("dd").textContent=data.origem||"Desconhecida"});
   const nomeJogador=auth.usuario.user_metadata?.nome_exibicao||auth.usuario.user_metadata?.name||auth.usuario.email?.split("@")[0]||"Jogador";
   document.querySelector("#jogador-ficha").textContent=nomeJogador;
   const foto=await urlFoto(data.foto_path),retrato=document.querySelector("#foto-ficha"),vazio=document.querySelector("#retrato-vazio");
@@ -83,7 +98,7 @@ async function iniciarFicha(){
     energia_atual:data.energia_atual??0,energia_max:data.energia_max??0,
     experiencia:data.experiencia??0,agilidade:data.agilidade??0,forca:data.forca??0,
     apt_magica:data.apt_magica??0,presenca:data.presenca??0,resistencia:data.resistencia??0,
-    pontos_atributo:data.pontos_atributo??5
+    pontos_atributo:data.pontos_atributo??5,origem:data.origem||""
   };
   aplicarValoresFicha(valoresFicha);
   window.addEventListener("rpg:ficha-atualizada",evento=>{
@@ -100,7 +115,7 @@ async function iniciarFicha(){
       const {data:atualizado,error:erroAtributo}=await auth.cliente.from("personagens")
         .update({[campo]:(valoresFicha[campo]||0)+1})
         .eq("id",id).eq("usuario_id",auth.usuario.id)
-        .select("nivel,vida_atual,vida_max,energia_atual,energia_max,experiencia,agilidade,forca,apt_magica,presenca,resistencia,pontos_atributo")
+        .select("nivel,vida_atual,vida_max,energia_atual,energia_max,experiencia,agilidade,forca,apt_magica,presenca,resistencia,pontos_atributo,origem")
         .single();
       if(erroAtributo){mensagem(erroAtributo.message.includes("column")?"Execute o arquivo ficha-schema-v2.sql no Supabase antes de distribuir os pontos.":"Não foi possível salvar o atributo.");aplicarValoresFicha(valoresFicha);return}
       valoresFicha=atualizado;aplicarValoresFicha(valoresFicha);mensagem("Ponto salvo!",true);
@@ -110,10 +125,11 @@ async function iniciarFicha(){
   const lista=document.querySelector("#lista-pericias");
   PERICIAS_FICHA.forEach(([nome,atributo])=>{
     const linha=document.createElement("button");linha.type="button";linha.className="pericia";
-    linha.innerHTML="<span></span><span></span><span>0</span><span>0</span>";
+    const bonus=Number(dadosOrigem(data.origem).pericias[nome])||0;linha.innerHTML="<span></span><span></span><span></span><span>0</span>";
     linha.children[0].textContent=nome;linha.children[1].textContent=`(${atributo})`;
+    linha.children[2].textContent=bonus>0?`+${bonus}`:String(bonus);
     linha.title=`Rolar ${nome}`;
-    linha.addEventListener("click",()=>rolarDados(1,0,`${nome}: `));lista.appendChild(linha);
+    linha.addEventListener("click",()=>rolarDados(1,bonus,`${nome}: `));lista.appendChild(linha);
   });
 
   const formDados=document.querySelector("#form-dados");
@@ -127,7 +143,7 @@ async function iniciarFicha(){
 
 function aplicarValoresFicha(valores){
   const nomes=["agilidade","forca","apt_magica","presenca","resistencia"];
-  nomes.forEach(nome=>{const botao=document.querySelector(`.atributo[data-atributo="${nome}"]`);if(botao){botao.querySelector("strong").textContent=valores[nome]??0;botao.disabled=(valores.pontos_atributo??0)<=0}});
+  nomes.forEach(nome=>{const botao=document.querySelector(`.atributo[data-atributo="${nome}"]`);if(botao){botao.querySelector("strong").textContent=valorComOrigem(valores,nome);botao.disabled=(valores.pontos_atributo??0)<=0}});
   const pontos=document.querySelector("#pontos-atributo");
   if(pontos){pontos.querySelector("strong").textContent=valores.pontos_atributo??0;pontos.classList.toggle("esgotado",(valores.pontos_atributo??0)<=0)}
   document.querySelector("#nivel-ficha").textContent=valores.nivel??0;
