@@ -1,1 +1,74 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Criar NPC/Monstro — Abismo</title><link rel="stylesheet" href="../../../personagem.css?v=24"><link rel="stylesheet" href="../../../npc-criacao-v11.css?v=24"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="../../../supabase-config.js?v=3" defer></script><script src="../../../auth-guard.js" defer></script><script src="../../../npc-criacao-v11.js?v=24" defer></script></head><body data-rpg="abismo" data-perfil="mestre"><div class="fundo"></div><main class="pagina" hidden><div class="topo"><a id="voltar-npcs" class="voltar" href="../personagens/index.html">← Voltar</a><span class="marca">ABISMO · MESTRE</span></div><header class="cabecalho"><p id="campanha-atual"></p><h1>Criação de NPC/Monstro</h1></header><section class="painel"><form id="form-npc"><div class="grade-form"><label class="upload"><input name="foto" type="file" accept="image/png,image/jpeg,image/webp"><img id="preview" class="preview" alt="Prévia"><span class="upload-info"><span class="upload-icone">↑</span><strong>Enviar foto</strong><small>PNG, JPG ou WEBP · até 5 MB</small></span></label><div class="campos"><div class="campo largo"><label>Nome</label><input name="nome" type="text" maxlength="100" placeholder="Como ele será chamado?" required></div><div class="campo largo historia"><label>História</label><textarea name="historia" maxlength="5000" placeholder="Origem, passado e acontecimentos..."></textarea><span class="contador"></span></div><div class="campo"><label>Personalidade</label><textarea name="personalidade" maxlength="2500" placeholder="Como ele pensa e age?"></textarea><span class="contador"></span></div><div class="campo"><label>Objetivos</label><textarea name="objetivos" maxlength="2500" placeholder="O que ele deseja alcançar?"></textarea><span class="contador"></span></div><div class="campo largo"><label>Anotações do mestre</label><textarea name="anotacoes" maxlength="5000" placeholder="Segredos, estratégias e detalhes..."></textarea><span class="contador"></span></div><div class="npc-campos-extra"><div class="campo"><label>Tipo</label><select name="tipo"><option>NPC</option><option>Monstro</option></select></div><div class="campo campo-definir-drops"><label>Drops ao morrer</label><button id="definir-drops" class="botao" type="button">Definir drops</button><div id="resumo-drops-criacao" class="resumo-drops-criacao"><small>Nenhum drop definido.</small></div></div><div class="campo"><label>XP ao morrer</label><input name="xp_recompensa" type="number" min="0" value="0"></div></div></div></div><p id="mensagem" class="mensagem"></p><div class="acoes"><button id="criar-npc" class="botao" type="submit">Criar NPC/Monstro</button><button id="ir-ficha" class="botao principal" type="button" disabled>Ir para a ficha</button></div></form></section></main></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Escolha sua aventura</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <main class="tela-inicial">
+        <h1 class="titulo-principal">Escolha sua aventura</h1>
+
+        <div class="seletor-aventuras">
+            <!-- Lado do RPG de fantasia -->
+            <section class="lado-aventura lado-rpg" aria-label="RPG de fantasia">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-rpg.png"
+                    alt="Aventureiros enfrentando uma aranha gigante"
+                >
+            </section>
+
+            <!-- A rachadura permanece entre os dois universos -->
+            <div class="rachadura" aria-hidden="true">
+                <svg viewBox="0 0 80 1000" preserveAspectRatio="none">
+                    <path
+                        d="M38 0 L24 110 L47 230 L20 340 L58 465 L30 590 L52 720 L28 850 L42 1000"
+                    ></path>
+                </svg>
+            </div>
+
+            <!-- Lado do RPG da Marvel -->
+            <section class="lado-aventura lado-marvel" aria-label="RPG da Marvel">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-marvel.png"
+                    alt="Mosaico em preto e branco com heróis dos quadrinhos"
+                >
+            </section>
+
+            <!-- Os botões ficam parados enquanto os backgrounds se movem -->
+            <div class="botoes-aventura">
+                <a
+                    class="botao-aventura botao-rpg"
+                    href="rpg/index.html"
+                    aria-label="Entrar no RPG Abismo"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-rpg.png"
+                        alt="Logo do RPG Abismo"
+                    >
+                </a>
+
+                <a
+                    class="botao-aventura botao-marvel"
+                    href="marvel/index.html"
+                    aria-label="Entrar no RPG da Marvel"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-marvel.png"
+                        alt="Logo do RPG da Marvel"
+                    >
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
