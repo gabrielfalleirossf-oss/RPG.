@@ -47,7 +47,7 @@ window.iniciarPainelMestreV7=async function(){
     const lista=document.querySelector("#historico-dados");lista.replaceChildren();
     registros.sort((a,b)=>new Date(b.criado_em)-new Date(a.criado_em));
     if(!registros.length)lista.appendChild(texto("p","As próximas rolagens dos jogadores aparecerão aqui.","painel-vazio"));
-    registros.forEach(r=>{const el=document.createElement("article");el.className="rolagem-historico"+(r.critico?" critico":"");el.append(texto("small",new Date(r.criado_em).toLocaleString("pt-BR")),texto("h3",r.jogador_nome+" · "+r.personagem_nome),texto("p",r.origem+" · "+r.resultados.length+"D"+r.faces),texto("strong",r.resultados.join(" + ")+" = "+r.total));if(r.critico)el.appendChild(texto("span","Crítico!"));lista.appendChild(el)});
+    registros.forEach(r=>{const el=document.createElement("article"),mod=Number(r.modificador)||0,conta=r.resultados.join(" + ")+(mod?` ${mod>0?"+":"−"} ${Math.abs(mod)}`:"");el.className="rolagem-historico"+(r.critico?" critico":"");el.append(texto("small",new Date(r.criado_em).toLocaleString("pt-BR")),texto("h3",r.jogador_nome+" · "+r.personagem_nome),texto("p",r.origem+" · "+r.resultados.length+"D"+r.faces),texto("strong",conta+" = "+r.total));if(r.critico)el.appendChild(texto("span","Crítico!"));lista.appendChild(el)});
     document.querySelector("#mais-historico").hidden=acabou;
   }
   async function carregarHistorico(mais=false){
