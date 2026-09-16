@@ -1,7 +1,8 @@
 (async function(){
+  const pagina=document.querySelector("main");if(pagina)pagina.hidden=false;
   function esperar(){if(window.RPG_AUTH)return Promise.resolve(window.RPG_AUTH);return new Promise(r=>document.addEventListener("rpg:auth-pronto",e=>r(e.detail),{once:true}))}
   const auth=await esperar(),rpg=document.body.dataset.rpg,qs=new URLSearchParams(location.search),campanha=qs.get("campanha")||"Testes";
-  if(auth?.perfil!=="mestre")return;
+  if(auth?.perfil!=="mestre"){const aviso=document.querySelector("#mensagem");if(aviso)aviso.textContent="A sessão de Mestre não foi reconhecida. Entre novamente pela área do Mestre.";return}
   const form=document.querySelector("#form-npc"),foto=form.foto,preview=document.querySelector("#preview"),upload=document.querySelector(".upload"),mensagem=document.querySelector("#mensagem"),ir=document.querySelector("#ir-ficha");
   let criadoId=null,recompensas=[];
   document.querySelector("#campanha-atual").textContent=campanha;document.querySelector("#voltar-npcs").href="../personagens/index.html?campanha="+encodeURIComponent(campanha);
@@ -13,5 +14,5 @@
   document.querySelector("#definir-drops").onclick=abrirDrops;
   async function enviarImagem(arquivo,pasta){if(!arquivo)return null;const ext={"image/png":"png","image/jpeg":"jpg","image/webp":"webp"}[arquivo.type]||"jpg",path=`${auth.usuario.id}/${rpg}/${pasta}/${crypto.randomUUID()}.${ext}`;const{error}=await auth.cliente.storage.from("personagens").upload(path,arquivo);if(error)throw error;return path}
   form.onsubmit=async e=>{e.preventDefault();const botao=document.querySelector("#criar-npc");botao.disabled=true;mensagem.textContent="Criando ficha...";try{const foto_path=await enviarImagem(foto.files[0],"npcs"),registro={rpg,campanha,tipo:form.tipo.value,nome:form.nome.value.trim(),historia:form.historia.value.trim(),descricao:form.historia.value.trim(),personalidade:form.personalidade.value.trim(),objetivos:form.objetivos.value.trim(),anotacoes:form.anotacoes.value.trim(),drops:"",xp_recompensa:Number(form.xp_recompensa.value)||0,foto_path,nivel:0,agilidade:0,forca:0,apt_magica:0,presenca:0,resistencia:0,vida_atual:15,vida_max:15,energia_atual:0,energia_max:0,sanidade_atual:100,sanidade_max:100,defesa:10};const{data,error}=await auth.cliente.from("npcs_monstros").insert(registro).select("id").single();if(error)throw error;criadoId=data.id;for(const item of recompensas){const fotoDrop=await enviarImagem(item.arquivo,"recompensas"),{error:erroDrop}=await auth.cliente.from("recompensas_npc").insert({npc_id:criadoId,tipo:item.tipo,nome:item.nome,descricao:item.descricao,bonus:item.bonus,foto_path:fotoDrop});if(erroDrop)throw erroDrop}mensagem.textContent="Ficha e drops criados! Agora configure livremente os atributos e recursos.";mensagem.classList.add("sucesso");ir.disabled=false}catch(error){mensagem.textContent=error.message+(/recompensas_npc|schema cache|relation/i.test(error.message)?" — execute o SQL V24 no Supabase.":"");botao.disabled=false}};
-  ir.onclick=()=>{if(criadoId)location.href="ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+criadoId};document.querySelector("main").hidden=false;
+  ir.onclick=()=>{if(criadoId)location.href="ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+criadoId};
 })();

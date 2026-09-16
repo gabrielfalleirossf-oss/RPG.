@@ -1,0 +1,4 @@
+html,body{min-height:100%;background:#020812;color:#fff}
+body[data-rpg="marvel"]{background:#0b0204}
+.npc-carregando{margin:18vh auto;padding:28px;width:min(620px,90vw);border:1px solid var(--accent,#55caff);background:#05090f;color:#fff;text-align:center;font:700 1rem var(--display,Georgia,serif)}
+.npc-carregando.erro{border-color:#b43c48;color:#ff9099}
