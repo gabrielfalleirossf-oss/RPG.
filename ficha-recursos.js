@@ -1,6 +1,6 @@
 window.iniciarRecursosFicha=async function(){
   const auth=window.RPG_AUTH,id=new URLSearchParams(location.search).get("id"),rpg=document.body.dataset.rpg,ehMestre=auth?.perfil==="mestre";
-  const estiloTreino=document.createElement("link");estiloTreino.rel="stylesheet";estiloTreino.href="../../../ficha-treino-v21.css?v=22";document.head.appendChild(estiloTreino);
+  const estiloTreino=document.createElement("link");estiloTreino.rel="stylesheet";estiloTreino.href="../../../ficha-treino-v21.css?v=23";document.head.appendChild(estiloTreino);
   if(!auth||!id||document.body.dataset.recursosProntos)return;document.body.dataset.recursosProntos="1";
   const grade=document.querySelector(".ficha-grade"),abas=document.querySelector(".ficha-abas");if(!grade||!abas)return;
   const botoes=[...abas.querySelectorAll(".ficha-aba")];botoes[0].textContent="Combate";botoes[0].dataset.aba="combate";
@@ -32,7 +32,7 @@ window.iniciarRecursosFicha=async function(){
   window.addEventListener("rpg:item-adicionado",e=>{if(e.detail?.personagem_id===id)carregarItens()});
   if(!ehMestre)configurarDescricao(personagem,urlFoto,mostrarMensagem);
   await Promise.all([carregarHabilidades(),carregarItens()]);trocar("combate");
-  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-dados-v5.js?v=22";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
+  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-dados-v5.js?v=23";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.atualizarFichaV5(personagem);
   if(!ehMestre&&personagem.campanha==="Testes")configurarEdicaoTreino(personagem,auth,mostrarMensagem);
 };
@@ -45,6 +45,9 @@ function abrirSeletorOrigem(p,msg){const origens=window.RPG_ORIGENS||{},dialog=d
 function configurarEdicaoTreino(p,auth,msg){
   const topo=document.querySelector(".ficha-topo"),lapis=document.createElement("button");
   lapis.type="button";lapis.className="lapis-treino";lapis.title="Editar recursos da ficha";lapis.setAttribute("aria-label","Editar recursos da ficha");lapis.textContent="✎";topo.appendChild(lapis);
+  const retrato=document.querySelector(".retrato-wrap"),colunaRetrato=document.createElement("div"),resetar=document.createElement("button");
+  colunaRetrato.className="retrato-coluna-treino";retrato.parentNode.insertBefore(colunaRetrato,retrato);colunaRetrato.appendChild(retrato);
+  resetar.type="button";resetar.className="resetar-ficha-treino";resetar.textContent="↻ Resetar ficha";resetar.title="Restaurar os valores iniciais desta ficha";colunaRetrato.insertBefore(resetar,retrato);
   let ativo=false;
   const campos={vida:{atual:"vida_atual",max:"vida_max",saida:"#vida-ficha",barra:"#barra-vida"},energia:{atual:"energia_atual",max:"energia_max",saida:"#energia-ficha",barra:"#barra-energia"},sanidade:{atual:"sanidade_atual",max:"sanidade_max",saida:"#sanidade-ficha",barra:"#barra-sanidade"}};
   const atualizar=(dados,campo)=>{Object.assign(p,dados);if(campo==="defesa"){document.querySelector(".defesa-pentagrama strong").textContent=p.defesa??10;document.querySelector('.controles-treino[data-campo="defesa"] .valor-controle').textContent=p.defesa??10;return}const c=campos[campo],atual=Number(p[c.atual])||0,max=Number(p[c.max])||0,texto=`${atual} / ${max}`;document.querySelector(c.saida).textContent=texto;document.querySelector(c.barra).style.setProperty("--valor",`${max?Math.max(0,Math.min(100,atual/max*100)):0}%`);document.querySelector(`.controles-treino[data-campo="${campo}"] .valor-controle`).textContent=texto};
@@ -52,5 +55,12 @@ function configurarEdicaoTreino(p,auth,msg){
   const controles=(campo)=>{const d=document.createElement("div");d.className="controles-treino";d.dataset.campo=campo;const valor=document.createElement("strong");valor.className="valor-controle";valor.textContent=campo==="defesa"?(p.defesa??10):`${p[campos[campo].atual]??0} / ${p[campos[campo].max]??0}`;[[-5,"«"],[-1,"‹"],[null,valor],[1,"›"],[5,"»"]].forEach(([delta,conteudo])=>{if(delta===null){d.appendChild(conteudo);return}const b=document.createElement("button");b.type="button";b.textContent=conteudo;b.title=`${delta>0?"Aumentar":"Diminuir"} ${Math.abs(delta)}`;b.setAttribute("aria-label",b.title);b.onclick=()=>ajustar(campo,delta,b);d.appendChild(b)});return d};
   Object.keys(campos).forEach(campo=>document.querySelector(`.recurso.${campo}`)?.appendChild(controles(campo)));
   document.querySelector(".defesa-pentagrama")?.appendChild(controles("defesa"));
+  resetar.onclick=async()=>{
+    if(!confirm("Resetar esta ficha de treino? Nível, XP, vida, energia, sanidade, defesa e atributos voltarão aos valores iniciais. A origem, a descrição, as habilidades e o inventário serão mantidos."))return;
+    resetar.disabled=true;resetar.textContent="Resetando...";
+    const {error}=await auth.cliente.rpc("resetar_ficha_treino",{alvo_personagem:p.id});
+    if(error){msg(error.message);resetar.disabled=false;resetar.textContent="↻ Resetar ficha";return}
+    msg("Ficha restaurada aos valores iniciais!",true);setTimeout(()=>location.reload(),450);
+  };
   lapis.onclick=()=>{ativo=!ativo;document.body.classList.toggle("edicao-treino-ativa",ativo);lapis.classList.toggle("ativo",ativo);lapis.textContent=ativo?"✓":"✎"};
 }
