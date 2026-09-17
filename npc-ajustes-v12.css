@@ -19,4 +19,22 @@
 .edit-resource,.apagar-item,.cartao-habilidade .del{display:none}.modo-edicao .edit-resource,.modo-edicao .apagar-item,.modo-edicao .cartao-habilidade .del{display:inline-grid}.item-edit-actions{position:absolute;right:8px;top:8px;display:flex;gap:5px}.item-edit-actions button{width:32px;height:32px;border:1px solid var(--accent);background:#080b10;color:#fff}.modo-edicao .cartao-habilidade{outline:1px solid rgba(var(--rgb),.55)}
 .edicao-direta-bar{position:sticky;z-index:45;top:0;display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px 16px;border:1px solid var(--accent);background:rgba(3,8,14,.96);box-shadow:0 8px 30px #000}.edicao-direta-bar strong{font-family:var(--display);color:var(--accent)}.edicao-direta-bar span{flex:1;color:#aeb8c4;font-size:.82rem}.edicao-direta-bar .botao{min-width:0;padding:10px 14px}
 .campo-direto{position:relative;z-index:6;width:64px!important;min-width:0!important;border:1px solid var(--accent)!important;background:#02070d!important;color:#fff!important;padding:7px!important;text-align:center;font:800 1rem var(--display)!important}.atributo>.campo-direto{width:58px!important}.defesa-pentagrama>.campo-direto{position:absolute;z-index:3;top:16px;left:50%;transform:translateX(-50%);width:48px!important}.progresso-personagem .campo-direto{margin-left:auto}.duplo-direto{display:flex;align-items:center;justify-content:flex-end;gap:5px}.duplo-direto .campo-direto{width:58px!important}.pericia>.campo-direto{justify-self:center;width:55px!important}.modo-edicao .pericia{cursor:default}.modo-edicao .descricao-npc input:not([type=file]),.modo-edicao .descricao-npc textarea,.modo-edicao .descricao-npc select{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--rgb),.08)}.modo-edicao .descricao-npc .foto-descricao{cursor:pointer}.modo-edicao .descricao-npc .foto-descricao:after{content:'Alterar imagem';position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;background:rgba(0,0,0,.82);color:#fff;font:700 .75rem var(--display)}
+
+/* V32 — libera a edição real do pentagrama e separa as ações dos itens */
+.npc-ficha .modo-edicao .atributos-npc .atributo,
+.npc-ficha .modo-edicao .atributos-npc .defesa-pentagrama{pointer-events:auto!important}
+.npc-ficha .modo-edicao .atributos-npc .atributos-sigilo,
+.npc-ficha .modo-edicao .atributos-npc .defesa-pentagrama svg,
+.npc-ficha .modo-edicao .atributos-npc .atributo:before{pointer-events:none!important}
+.npc-ficha .modo-edicao .atributos-npc .campo-direto{pointer-events:auto!important;z-index:20!important;cursor:text;appearance:auto}
+.npc-ficha .modo-edicao .atributo{overflow:visible}
+.npc-ficha .modo-edicao .atributo>.campo-direto{height:38px;width:66px!important}
+.npc-ficha .modo-edicao .defesa-pentagrama>.campo-direto{top:10px;height:34px;width:52px!important;padding:4px!important}
+.item-edit-actions{right:10px;top:10px;gap:10px;z-index:12}
+.item-edit-actions .edit-resource,
+.item-edit-actions .apagar-item{position:static!important;inset:auto!important;display:none;place-items:center;flex:0 0 36px;width:36px;height:36px;margin:0;padding:0;border-radius:5px;cursor:pointer}
+.modo-edicao .item-edit-actions .edit-resource,
+.modo-edicao .item-edit-actions .apagar-item{display:grid}
+.item-edit-actions .edit-resource:hover{background:rgba(var(--rgb),.28)}
+.item-edit-actions .apagar-item:hover{border-color:#ff6574;background:#7d1520;color:#fff}
 @media(max-width:900px){.grade-inventario{grid-template-columns:repeat(2,1fr)}.descricao-edicao-grade{grid-template-columns:1fr}.foto-descricao{min-height:420px}}@media(max-width:560px){.painel-recurso-topo{align-items:stretch;flex-direction:column}.grade-inventario{grid-template-columns:1fr 1fr}.habilidade-detalhes{padding-left:20px}}
