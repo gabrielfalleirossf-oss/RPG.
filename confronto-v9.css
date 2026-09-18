@@ -39,3 +39,20 @@
 @keyframes impactoAbismoV35{0%,10%{opacity:0;transform:scale(.1)}28%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(10)}}
 @keyframes tituloAbismoV35{from{opacity:0;transform:translateY(20px) scale(.76);letter-spacing:.42em}to{opacity:1;transform:none;letter-spacing:.18em}}
 @media(max-width:600px){.tema-abismo .espadas-realistas>svg{width:132%;height:100%;left:-16%}.tema-abismo .espadas-realistas>strong{font-size:clamp(1.45rem,8vw,2.5rem);letter-spacing:.09em}}
+
+/* V36 — espadas fotorealistas, proporção correta e título fora do impacto */
+.tema-abismo .espadas-v36{width:min(760px,100vw);height:min(650px,100vh);filter:none}
+.tema-abismo .choque-v36{position:absolute;left:50%;top:44%;width:min(680px,96vw);height:min(470px,68vh);transform:translate(-50%,-50%);filter:drop-shadow(0 22px 20px rgba(0,0,0,.82))}
+.tema-abismo .espada-v36{position:absolute;z-index:4;left:50%;top:50%;display:block;width:clamp(150px,22vw,235px);height:auto;transform-origin:50% 78%;user-select:none;pointer-events:none}
+.tema-abismo .espada-v36-esq{animation:espadaFotoEsqV36 1.12s cubic-bezier(.18,.88,.2,1) both}
+.tema-abismo .espada-v36-dir{animation:espadaFotoDirV36 1.12s cubic-bezier(.18,.88,.2,1) both}
+.tema-abismo .choque-v36>em{position:absolute;z-index:7;left:50%;top:40%;width:24px;height:24px;border:3px solid #fff;border-radius:50%;opacity:0;transform:translate(-50%,-50%);box-shadow:0 0 12px #fff,0 0 42px #72d7ff,0 0 90px #239bd2;animation:impactoFotoV36 .9s .58s ease-out both}
+.tema-abismo .choque-v36>i{position:absolute;z-index:8;left:50%;top:40%;width:155px;height:155px;margin:0;border-radius:0;opacity:0;transform:translate(-50%,-50%);transform-origin:50% 50%;background:conic-gradient(from 5deg,transparent 0 9deg,#fff 10deg 11deg,transparent 12deg 38deg,#8edfff 39deg 40deg,transparent 41deg 77deg,#fff 78deg 79deg,transparent 80deg 119deg,#8edfff 120deg 121deg,transparent 122deg 164deg,#fff 165deg 166deg,transparent 167deg 209deg,#8edfff 210deg 211deg,transparent 212deg 258deg,#fff 259deg 260deg,transparent 261deg 305deg,#8edfff 306deg 307deg,transparent 308deg);box-shadow:none;clip-path:polygon(48% 0,53% 42%,82% 8%,59% 45%,100% 39%,61% 51%,90% 78%,56% 57%,55% 100%,49% 58%,15% 90%,43% 54%,0 56%,43% 48%,9% 17%,47% 43%);filter:drop-shadow(0 0 7px #dff8ff);animation:faiscasFotoV36 .72s .58s ease-out both}
+.tema-abismo .choque-v36>i:before,.tema-abismo .choque-v36>i:after{content:none}
+.tema-abismo .espadas-v36>strong{position:absolute;z-index:10;left:50%;top:78%;width:100%;transform:translate(-50%,24px) scale(.8);animation:tituloFotoV36 .68s .82s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes espadaFotoEsqV36{0%{transform:translate(-185%,-8%) rotate(-78deg) scale(.86);opacity:0}54%{opacity:1}72%{transform:translate(-54%,-78%) rotate(-51deg) scale(1.03)}84%{transform:translate(-48%,-78%) rotate(-44deg) scale(.98)}100%{transform:translate(-50%,-78%) rotate(-47deg) scale(1)}}
+@keyframes espadaFotoDirV36{0%{transform:translate(85%,-8%) rotate(78deg) scale(.86);opacity:0}54%{opacity:1}72%{transform:translate(-46%,-78%) rotate(51deg) scale(1.03)}84%{transform:translate(-52%,-78%) rotate(44deg) scale(.98)}100%{transform:translate(-50%,-78%) rotate(47deg) scale(1)}}
+@keyframes impactoFotoV36{0%,10%{opacity:0;transform:translate(-50%,-50%) scale(.1)}25%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(11)}}
+@keyframes faiscasFotoV36{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-18deg)}28%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8) rotate(12deg)}}
+@keyframes tituloFotoV36{to{opacity:1;transform:translate(-50%,0) scale(1);letter-spacing:.18em}}
+@media(max-width:600px){.tema-abismo .choque-v36{top:42%;height:58vh}.tema-abismo .espada-v36{width:clamp(135px,42vw,190px)}.tema-abismo .espadas-v36>strong{top:74%;font-size:clamp(1.45rem,8vw,2.5rem);letter-spacing:.09em}}
