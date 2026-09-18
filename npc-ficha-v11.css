@@ -1,1 +1,27 @@
 body.npc-ficha{background:#050608}.npc-ficha #npc-ficha-root{width:min(1900px,96vw);margin:auto;padding:18px 0 60px}.npc-topo-acoes{display:flex;align-items:center;gap:10px}.npc-topo-acoes>button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--accent);border-radius:50%;background:transparent;color:var(--accent);font-size:1.25rem}.atributos-npc .atributo{pointer-events:none}.atributos-npc .titulo-pentagrama{display:grid}.npc-ficha .seletor-dados{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.npc-ficha .seletor-dados button{min-height:65px;border:1px solid rgba(var(--rgb),.3);background:#06090d;color:#fff;font-weight:900}.npc-ficha .recurso.sanidade .recurso-trilho i{background:#754eb9}.respiro-npc{min-height:420px}.npc-painel-texto{min-height:75vh;border:1px solid rgba(var(--rgb),.3);padding:clamp(25px,5vw,65px);background:rgba(0,0,0,.4)}.npc-painel-texto>h1{font:700 clamp(2.3rem,6vw,5rem) var(--display);margin-top:0}.npc-painel-texto p{white-space:pre-wrap;line-height:1.7;border-bottom:1px solid rgba(var(--rgb),.25);padding:12px 0}.drops-npc{display:grid;gap:8px}.drops-npc p{border:1px solid rgba(var(--rgb),.3);padding:15px;margin:0}.editor-npc-completo{width:min(1000px,95vw);max-height:92vh;background:#080b10;color:#fff;border:1px solid var(--accent);padding:0}.editor-npc-completo form{padding:24px}.editor-npc-completo header,.editor-npc-completo footer{display:flex;justify-content:space-between;align-items:center}.editor-npc-completo header button,.editor-npc-completo footer button,.editor-npc-completo nav button{border:1px solid rgba(var(--rgb),.4);background:#0b1017;color:#fff;padding:11px 16px}.editor-npc-completo nav{display:flex;margin:18px 0}.editor-npc-completo nav button{flex:1}.editor-npc-completo nav button.ativa{border-color:var(--accent);color:var(--accent)}.editor-campos{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.editor-campos label{display:grid;gap:6px}.editor-campos input,.editor-campos textarea{width:100%;background:#05070b;color:#fff;border:1px solid #39434d;padding:11px}.editor-campos textarea{min-height:130px}.status-editor{color:#ff7c86}.resultado-critico{color:#3bd477!important}@media(max-width:800px){.editor-campos{grid-template-columns:1fr 1fr}.npc-topo-acoes{flex-direction:column}.npc-ficha .seletor-dados{grid-template-columns:repeat(3,1fr)}}
+ 
+/* V37 — mini ficha do adversário abaixo dos dados */
+.oponente-confronto{margin-top:24px;border:1px solid rgba(var(--rgb),.38);background:linear-gradient(145deg,rgba(var(--rgb),.08),rgba(0,0,0,.52));padding:18px 20px;animation:miniConfrontoEntrada .35s ease both}
+.oponente-confronto>header{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(var(--rgb),.25)}
+.oponente-confronto>header small{color:var(--accent);font-size:.65rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.oponente-confronto>header h2{margin:0;font:700 1.2rem var(--display)}
+.oponente-confronto>article{padding-top:16px}
+.confronto-identidade{display:grid;grid-template-columns:82px 1fr;align-items:center;gap:16px}
+.confronto-identidade img,.confronto-sem-foto{width:82px;height:100px;border:1px solid rgba(var(--rgb),.45);object-fit:cover;background:#070b10}
+.confronto-sem-foto{display:grid;place-items:center;color:var(--accent);font:800 2.2rem var(--display)}
+.confronto-identidade small{color:var(--accent);text-transform:uppercase;letter-spacing:.12em;font-size:.62rem}
+.confronto-identidade h3{margin:5px 0;font:700 1.22rem var(--display)}
+.confronto-identidade p{margin:0;color:#aeb8c4;font-size:.78rem}
+.confronto-atributos{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:16px 0}
+.confronto-atributos span{border:1px solid rgba(var(--rgb),.25);padding:8px 3px;text-align:center;color:#b8c6d4;font-size:.62rem}
+.confronto-atributos b{display:block;margin-top:3px;color:var(--accent);font:800 1.08rem var(--display)}
+.confronto-recurso{margin-top:11px}
+.confronto-recurso>span{display:flex;justify-content:space-between;gap:12px;margin-bottom:5px;color:#dbe6ee;font-size:.7rem;text-transform:uppercase}
+.confronto-recurso>span strong{color:#fff}
+.confronto-recurso>i{display:block;height:20px;border:1px solid rgba(255,255,255,.3);background:#080b0f;overflow:hidden}
+.confronto-recurso>i b{display:block;height:100%;background:linear-gradient(90deg,#8f0718,#d72c42)}
+.confronto-recurso.energia>i b{background:linear-gradient(90deg,#075783,#20a7dc)}
+.confronto-recurso.sanidade>i b{background:linear-gradient(90deg,#513080,#9762d5)}
+.ficha-combate:has(.oponente-confronto) .respiro-npc{min-height:100px}
+@keyframes miniConfrontoEntrada{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.oponente-confronto{padding:14px}.oponente-confronto>header{align-items:start;flex-direction:column}.confronto-identidade{grid-template-columns:70px 1fr}.confronto-identidade img,.confronto-sem-foto{width:70px;height:86px}.confronto-atributos{gap:4px}.confronto-atributos span{font-size:.55rem}}
