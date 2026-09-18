@@ -1,8 +1,7 @@
 window.iniciarAcoesMestreV8=async function(){
  const auth=window.RPG_AUTH,qs=new URLSearchParams(location.search),campanha=qs.get("campanha")||"Testes",rpg=document.body.dataset.rpg;
  if(auth?.perfil!=="mestre"||document.querySelector("#abrir-acoes-mestre"))return;
- const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../acoes-mestre-v8.css";document.head.appendChild(estilo);
- const css=document.createElement("link");css.rel="stylesheet";css.href="../../../acoes-mestre-v8.css";document.head.appendChild(css);
+ const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../acoes-mestre-v8.css?v=49";document.head.appendChild(estilo);
  const topo=document.querySelector(".escudo-campanha .escudo-resumo-topo"),mais=document.createElement("button");mais.id="abrir-acoes-mestre";mais.className="abrir-acoes-mestre";mais.type="button";mais.textContent="+";mais.title="Ações do Mestre";mais.setAttribute("aria-label","Abrir ações do Mestre");topo.appendChild(mais);
  const mensagem=(texto,sucesso=false)=>{const el=document.querySelector("#aviso-mestre");el.textContent=texto;el.classList.toggle("sucesso",sucesso)};
  async function jogadores(){
@@ -54,7 +53,7 @@ window.iniciarAcoesMestreV8=async function(){
  function mostrarFormulario(d,selecionados,acao){
   const area=d.querySelector("#conteudo-acoes");
   if(acao==="recado")area.innerHTML=formularioBase("Dar um recado",'<label>Recado<textarea name="mensagem" required maxlength="5000"></textarea></label><label>Imagem opcional<input name="foto" type="file" accept="image/png,image/jpeg,image/webp"></label>');
-  if(acao==="habilidade")area.innerHTML=formularioBase("Adicionar habilidade",'<label>Nome<input name="nome" required maxlength="100"></label><label>Descrição<textarea name="descricao" maxlength="3000"></textarea></label><label>Imagem opcional<input name="foto" type="file" accept="image/png,image/jpeg,image/webp"></label>');
+  if(acao==="habilidade")area.innerHTML=formularioBase("Adicionar habilidade",'<label>Nome<input name="nome" required maxlength="100"></label><label>Descrição<textarea name="descricao" required maxlength="3000"></textarea></label><label>Imagem<input name="foto" type="file" accept="image/png,image/jpeg,image/webp"></label><fieldset class="opcionais-habilidade"><legend>Características opcionais</legend><label>Custo de energia mágica<small>Deixe vazio se não consumir energia.</small><input name="custo_magico" type="number" min="0" max="9999" placeholder="Ex.: 5"></label><label>Dano<small>Aceita valores ou fórmulas de dados.</small><input name="dano" maxlength="100" placeholder="Ex.: 2D8 + 3 ou 15"></label><label>Tipo do efeito<select name="tipo_efeito"><option value="">Sem efeito</option><option value="benefico">Benéfico</option><option value="malefico">Maléfico</option><option value="misto">Misto</option><option value="neutro">Neutro</option></select></label><label class="campo-efeito">Efeito<textarea name="efeito" maxlength="2000" placeholder="Ex.: alvo fica atordoado por 1 turno..."></textarea></label></fieldset>');
   if(acao==="item")area.innerHTML=formularioBase("Adicionar item",'<label>Nome<input name="nome" required maxlength="100"></label><label>Descrição<textarea name="descricao" maxlength="3000"></textarea></label><label>Bônus<input name="bonus" maxlength="200" placeholder="+2 Defesa, cura 5..."></label><label>Imagem opcional<input name="foto" type="file" accept="image/png,image/jpeg,image/webp"></label>');
   if(acao==="xp")area.innerHTML=formularioBase("Upar level/XP",'<div class="progresso-opcoes"><label>Adicionar XP<input name="xp" type="number" min="0" max="100000" value="0"></label><label>Adicionar níveis diretamente<input name="niveis" type="number" min="0" max="1000" value="0"></label></div><p class="explicacao-xp">Cada nível concede 3 pontos de atributo. O XP excedente continua para o próximo nível.</p>');
   const form=area.querySelector("form");form.querySelector(".voltar-menu").onclick=()=>mostrarMenu(d,selecionados);
@@ -67,7 +66,7 @@ window.iniciarAcoesMestreV8=async function(){
     }
     if(acao==="habilidade"||acao==="item"){
      const path=await enviarImagem(form.foto.files[0],acao==="item"?"itens":"habilidades"),tabela=acao==="item"?"itens_personagem":"habilidades_personagem";
-     const registros=selecionados.map(p=>{const o={personagem_id:p.id,nome:form.nome.value.trim(),descricao:form.descricao.value.trim(),foto_path:path,criado_por:auth.usuario.id};if(acao==="item")o.bonus=form.bonus.value.trim();return o});
+     const registros=selecionados.map(p=>{const o={personagem_id:p.id,nome:form.nome.value.trim(),descricao:form.descricao.value.trim(),foto_path:path,criado_por:auth.usuario.id};if(acao==="item")o.bonus=form.bonus.value.trim();else{o.custo_magico=form.custo_magico.value===""?null:Number(form.custo_magico.value);o.dano=form.dano.value.trim()||null;o.efeito=form.efeito.value.trim()||null;o.tipo_efeito=o.efeito?(form.tipo_efeito.value||"neutro"):null}return o});
      const {error}=await auth.cliente.from(tabela).insert(registros);if(error)throw error;
     }
     if(acao==="xp"){
