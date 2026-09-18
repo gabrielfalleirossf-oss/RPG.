@@ -121,6 +121,6 @@ window.iniciarPainelMestreV7=async function(){
   const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()},3000);
   document.addEventListener("visibilitychange",()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()});
   window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens)},{once:true});
-  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
+  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js?v=38";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.iniciarAcoesMestreV8();
 };
