@@ -1,7 +1,7 @@
 window.iniciarPainelMestreV7=async function(){
   const auth=window.RPG_AUTH,qs=new URLSearchParams(location.search),campanha=qs.get("campanha")||"Testes",rpg=document.body.dataset.rpg;
   if(auth?.perfil!=="mestre")return;
-  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css?v=36";document.head.appendChild(estilo);const estiloConfronto=document.createElement("link");estiloConfronto.rel="stylesheet";estiloConfronto.href="../../../confronto-v9.css?v=36";document.head.appendChild(estiloConfronto);
+  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css?v=42";document.head.appendChild(estilo);const estiloConfronto=document.createElement("link");estiloConfronto.rel="stylesheet";estiloConfronto.href="../../../confronto-v9.css?v=36";document.head.appendChild(estiloConfronto);
   const main=document.querySelector(".pagina-mestre"),grade=document.querySelector("#grade-mestre"),cabecalho=document.querySelector(".mestre-cabecalho");
   const nav=document.createElement("nav");nav.className="painel-mestre-abas";nav.setAttribute("aria-label","Área da campanha");
   for(const [chave,nome] of [["jogadores","Fichas dos jogadores"],["escudo","Escudo do Mestre"],["npcs","NPCs/Monstros"]]){
@@ -9,7 +9,7 @@ window.iniciarPainelMestreV7=async function(){
   }
   cabecalho.after(nav);
   const escudo=document.createElement("section");escudo.className="escudo-campanha";escudo.hidden=true;
-  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens dos jogadores desta campanha</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><div class="acoes-escudo-topo"><button id="testar-animacao" type="button">▶ Ver animação</button><button id="atualizar-escudo" type="button">↻ Atualizar</button></div></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
+  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens de jogadores, NPCs e monstros</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><section class="confrontos-escudo"><header class="escudo-resumo-topo"><div><small>Tempo real</small><h2>Confrontos ativos</h2></div></header><div id="confrontos-ativos" class="lista-confrontos-ativos"></div></section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><div class="acoes-escudo-topo"><button id="testar-animacao" type="button">▶ Ver animação</button><button id="atualizar-escudo" type="button">↻ Atualizar</button></div></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
   main.appendChild(escudo);
   const npcs=document.createElement("section");npcs.className="painel-npcs";npcs.hidden=true;
   npcs.innerHTML='<header class="escudo-resumo-topo"><div><h2>NPCs e Monstros</h2><p>Fichas privadas do Mestre — sem limite de pontos.</p></div><button id="novo-npc" type="button">+ Criar ficha</button></header><div id="grade-npcs" class="resumos-campanha"></div>';
@@ -47,6 +47,7 @@ window.iniciarPainelMestreV7=async function(){
     const cards=await Promise.all(data.map(p=>cartao(p)));const lista=document.querySelector("#resumos-campanha");lista.replaceChildren(...cards);
     if(!data.length)lista.appendChild(texto("p","Nenhum personagem criado nesta campanha.","painel-vazio"));
   }
+  async function carregarConfrontos(){const lista=document.querySelector('#confrontos-ativos'),{data,error}=await auth.cliente.from('confrontos').select('id,oponente_tipo,personagem_a_id,personagem_b_id,npc_b_id,criado_em').eq('rpg',rpg).eq('campanha',campanha).eq('ativo',true).order('criado_em',{ascending:false});if(error){lista.replaceChildren(texto('p','Não foi possível carregar os confrontos: '+error.message,'painel-vazio'));return}const cards=await Promise.all((data||[]).map(async c=>{const{data:d}=await auth.cliente.rpc('obter_confronto_detalhes',{confronto_alvo:c.id}),el=document.createElement('article');el.className='confronto-ativo-card';if(!d){el.textContent='Confronto indisponível';return el}el.innerHTML='<div><small>'+ (c.oponente_tipo==='npc'?'Jogador × NPC/Monstro':'Jogador × Jogador') +'</small><h3></h3><p>Iniciado '+new Date(c.criado_em).toLocaleString('pt-BR')+'</p></div><a>Abrir ficha do confronto →</a>';el.querySelector('h3').textContent=d.lado_a.nome+' × '+d.lado_b.nome;const a=el.querySelector('a');a.href=c.oponente_tipo==='npc'?'../npc/ficha/index.html?campanha='+encodeURIComponent(campanha)+'&id='+encodeURIComponent(d.lado_b.id)+'&confronto='+encodeURIComponent(c.id):'../confronto/index.html?campanha='+encodeURIComponent(campanha)+'&confronto='+encodeURIComponent(c.id);a.target='_blank';a.rel='noopener';return el}));lista.replaceChildren(...cards);if(!cards.length)lista.appendChild(texto('p','Nenhum confronto ativo nesta campanha.','sem-confronto'))}
   function desenharHistorico(){
     const lista=document.querySelector("#historico-dados");lista.replaceChildren();
     registros.sort((a,b)=>new Date(b.criado_em)-new Date(a.criado_em));
@@ -61,7 +62,7 @@ window.iniciarPainelMestreV7=async function(){
     if(mais||anteriores===0){anteriores+=data.length;acabou=data.length<100}
     const mapa=new Map(registros.map(r=>[r.id,r]));data.forEach(r=>mapa.set(r.id,r));registros=[...mapa.values()];desenharHistorico();
   }
-  async function atualizar(){if(ocupado)return;ocupado=true;try{await Promise.all([carregarResumo(),carregarHistorico()])}finally{ocupado=false}}
+  async function atualizar(){if(ocupado)return;ocupado=true;try{await Promise.all([carregarResumo(),carregarHistorico(),carregarConfrontos()])}finally{ocupado=false}}
   async function carregarNpcs(){
     const {data,error}=await auth.cliente.from("npcs_monstros").select("*").eq("rpg",rpg).eq("campanha",campanha).order("criado_em");
     if(error){aviso("Para criar NPCs e monstros, execute mestre-painel-v7.sql: "+error.message);return}
@@ -118,9 +119,10 @@ window.iniciarPainelMestreV7=async function(){
       const nova=payload.new;if(nova?.campanha!==campanha)return;
       if(!registros.some(registro=>registro.id===nova.id)){registros.unshift(nova);anteriores+=1;if(tab==="escudo")desenharHistorico()}
     }).subscribe();
+  const canalConfrontos=auth.cliente.channel('confrontos-escudo-'+rpg+'-'+campanha).on('postgres_changes',{event:'*',schema:'public',table:'confrontos',filter:'rpg=eq.'+rpg},payload=>{const linha=payload.new||payload.old;if(linha?.campanha===campanha&&tab==='escudo')carregarConfrontos()}).subscribe();
   const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()},3000);
   document.addEventListener("visibilitychange",()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()});
-  window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens)},{once:true});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens);auth.cliente.removeChannel(canalConfrontos)},{once:true});
   await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js?v=38";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.iniciarAcoesMestreV8();
 };
