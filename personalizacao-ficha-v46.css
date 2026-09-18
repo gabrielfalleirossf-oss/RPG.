@@ -1,0 +1,31 @@
+body[data-tema-ficha="roxo"]{--accent:#b66cff!important;--destaque:#b66cff!important;--rgb:182,108,255!important;--deep:#08020e!important;--linha:rgba(182,108,255,.34)!important}
+body[data-tema-ficha="rosa"]{--accent:#ff65b5!important;--destaque:#ff65b5!important;--rgb:255,101,181!important;--deep:#0d0208!important;--linha:rgba(255,101,181,.34)!important}
+body[data-tema-ficha="azul"]{--accent:#397dff!important;--destaque:#397dff!important;--rgb:57,125,255!important;--deep:#010611!important;--linha:rgba(57,125,255,.34)!important}
+body[data-tema-ficha="dourado"]{--accent:#e7b84b!important;--destaque:#e7b84b!important;--rgb:231,184,75!important;--deep:#0d0901!important;--linha:rgba(231,184,75,.36)!important}
+
+body[data-tema-ficha] .fundo{background-image:linear-gradient(rgba(var(--rgb),.035) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--rgb),.035) 1px,transparent 1px),radial-gradient(circle at 55% 20%,rgba(var(--rgb),.16),transparent 42%)!important}
+body[data-tema-ficha] .dado-escolha svg,body[data-tema-ficha] .d20 svg,body[data-tema-ficha] .d20-vetor svg,body[data-tema-ficha] .d20-abismo svg{stroke:var(--accent)!important;filter:drop-shadow(0 0 7px rgba(var(--rgb),.55))}
+body[data-tema-ficha] .ficha-coluna,body[data-tema-ficha] .painel,body[data-tema-ficha] .painel-confronto,body[data-tema-ficha] .duelo-coluna{border-color:rgba(var(--rgb),.34)!important}
+
+.controles-ficha-visual{position:fixed;z-index:620;top:108px;right:14px;display:grid;gap:13px;padding:0;margin:0;pointer-events:auto}
+.controles-ficha-visual button{width:48px;height:48px;padding:10px;display:grid;place-items:center;border:1px solid rgba(var(--rgb),.58);border-radius:50%;color:var(--accent);background:rgba(2,8,18,.88);box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 18px rgba(var(--rgb),.12);cursor:pointer;transition:transform .18s ease,background .18s ease,box-shadow .18s ease,color .18s ease}
+.controles-ficha-visual button:hover{transform:translateX(-3px) scale(1.05);background:rgba(var(--rgb),.16);box-shadow:0 0 22px rgba(var(--rgb),.38)}
+.controles-ficha-visual button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.controles-ficha-visual svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.controles-ficha-visual .controle-ficha-tema svg path{fill:rgba(var(--rgb),.15)}
+.controles-ficha-visual .controle-ficha-tema svg circle{fill:currentColor;stroke:none}
+.controles-ficha-visual .controle-ficha-dado.ativo{color:#fff;background:var(--accent);box-shadow:0 0 8px #fff,0 0 28px rgba(var(--rgb),.85)}
+
+.animacao-dado-ficha{position:fixed;inset:0;z-index:9999;display:grid;place-content:center;justify-items:center;gap:10px;pointer-events:none;background:radial-gradient(circle,rgba(var(--rgb),.13),transparent 26%);opacity:0;transition:opacity .14s ease}
+.animacao-dado-ficha.rolando{opacity:1}
+.dado-animado-ficha{position:relative;width:112px;height:112px;display:grid;place-items:center;color:var(--accent);filter:drop-shadow(0 0 18px rgba(var(--rgb),.85));transform:translateY(-18px) rotate(-28deg) scale(.65)}
+.dado-animado-ficha svg{position:absolute;inset:0;width:100%;height:100%;fill:rgba(2,8,18,.94);stroke:currentColor;stroke-width:2.2;stroke-linejoin:round}
+.dado-animado-ficha span{position:relative;z-index:1;font:700 32px Georgia,serif;color:#fff;text-shadow:0 0 9px rgba(var(--rgb),1)}
+.animacao-dado-ficha small{font:700 13px Arial,sans-serif;letter-spacing:.24em;color:var(--accent);text-shadow:0 0 8px rgba(var(--rgb),.8)}
+.animacao-dado-ficha.rolando .dado-animado-ficha{animation:dado-giro-ficha .62s cubic-bezier(.2,.72,.28,1)}
+.animacao-dado-ficha.resultado .dado-animado-ficha{transform:translateY(0) rotate(0) scale(1.06);transition:transform .18s cubic-bezier(.2,1.8,.4,1)}
+.animacao-dado-ficha.saindo{opacity:0;transition:opacity .28s ease}
+@keyframes dado-giro-ficha{0%{transform:translate(-55px,-70px) rotate(-70deg) scale(.55)}28%{transform:translate(38px,-18px) rotate(170deg) scale(.82)}60%{transform:translate(-18px,22px) rotate(390deg) scale(.92)}100%{transform:translateY(0) rotate(720deg) scale(1)}}
+
+@media(max-width:760px){.controles-ficha-visual{top:92px;right:7px;gap:9px}.controles-ficha-visual button{width:42px;height:42px;padding:9px}.dado-animado-ficha{width:94px;height:94px}}
+@media(prefers-reduced-motion:reduce){.controles-ficha-visual button,.animacao-dado-ficha,.dado-animado-ficha{animation:none!important;transition:none!important}}
