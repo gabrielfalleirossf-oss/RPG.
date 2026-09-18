@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         recados.onload = () => window.iniciarRecadosJogadorV8?.();
         document.head.appendChild(recados);
         const confrontos = document.createElement("script");
-        confrontos.src = `${raizSite}/confronto-jogador-v9.js?v=34`;
+        confrontos.src = `${raizSite}/confronto-jogador-v9.js?v=35`;
         confrontos.onload = () => window.iniciarConfrontosJogadorV9?.();
         document.head.appendChild(confrontos);
     }
