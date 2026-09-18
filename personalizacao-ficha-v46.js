@@ -1,118 +1,22 @@
-(() => {
-  "use strict";
-
-  const TEMAS = ["original", "roxo", "rosa", "azul", "dourado"];
-  const NOMES = { original: "Original", roxo: "Roxo", rosa: "Rosa", azul: "Azul-escuro", dourado: "Dourado" };
-  const resultadosVistos = new WeakMap();
-  let animacaoAtual = null;
-
-  function iniciar() {
-    if (document.querySelector(".controles-ficha-visual")) return;
-
-    const rpg = document.body.dataset.rpg || "abismo";
-    const chaveTema = `rpg-tema-ficha-${rpg}`;
-    const chaveAnimacao = `rpg-animacao-dados-${rpg}`;
-    let tema = localStorage.getItem(chaveTema) || "original";
-    if (!TEMAS.includes(tema)) tema = "original";
-    let animarDados = localStorage.getItem(chaveAnimacao) === "true";
-
-    const controles = document.createElement("aside");
-    controles.className = "controles-ficha-visual";
-    controles.setAttribute("aria-label", "Personalização da ficha");
-    controles.innerHTML = `
-      <button class="controle-ficha-tema" type="button" aria-label="Trocar tema">
-        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6a18 18 0 1 0 0 36h3.2a3.8 3.8 0 0 0 1.1-7.4 3 3 0 0 1 1-5.8H35A7 7 0 0 0 42 22C42 13.2 34 6 24 6Z"/><circle cx="15" cy="20" r="2.4"/><circle cx="20" cy="13" r="2.4"/><circle cx="29" cy="13" r="2.4"/><circle cx="35" cy="20" r="2.4"/></svg>
-      </button>
-      <button class="controle-ficha-dado" type="button" aria-label="Ativar animação dos dados" aria-pressed="false">
-        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="m24 5 17 10-4 20-13 8-13-8-4-20Z"/><path d="m24 5-8 13 8 20 8-20Zm-17 10 9 3 16 0 9-3M11 35l13 3 13-3"/></svg>
-      </button>`;
-    document.body.appendChild(controles);
-
-    const botaoTema = controles.querySelector(".controle-ficha-tema");
-    const botaoDado = controles.querySelector(".controle-ficha-dado");
-
-    function aplicarTema() {
-      if (tema === "original") delete document.body.dataset.temaFicha;
-      else document.body.dataset.temaFicha = tema;
-      const proximo = TEMAS[(TEMAS.indexOf(tema) + 1) % TEMAS.length];
-      botaoTema.title = `Tema atual: ${NOMES[tema]}. Próximo: ${NOMES[proximo]}`;
-      botaoTema.setAttribute("aria-label", `Trocar tema. Tema atual: ${NOMES[tema]}`);
-    }
-
-    function aplicarAnimacao() {
-      botaoDado.classList.toggle("ativo", animarDados);
-      botaoDado.setAttribute("aria-pressed", String(animarDados));
-      botaoDado.setAttribute("aria-label", `${animarDados ? "Desativar" : "Ativar"} animação dos dados`);
-      botaoDado.title = `Animação dos dados: ${animarDados ? "ativada" : "desativada"}`;
-    }
-
-    botaoTema.addEventListener("click", () => {
-      tema = TEMAS[(TEMAS.indexOf(tema) + 1) % TEMAS.length];
-      localStorage.setItem(chaveTema, tema);
-      aplicarTema();
-    });
-    botaoDado.addEventListener("click", () => {
-      animarDados = !animarDados;
-      localStorage.setItem(chaveAnimacao, String(animarDados));
-      aplicarAnimacao();
-    });
-
-    aplicarTema();
-    aplicarAnimacao();
-
-    document.querySelectorAll(".resultado-dados").forEach((el) => resultadosVistos.set(el, el.textContent.trim()));
-    const observador = new MutationObserver((mutacoes) => {
-      if (!animarDados) return;
-      const alvos = new Set();
-      for (const mutacao of mutacoes) {
-        const proprio = mutacao.target.nodeType === 1 ? mutacao.target : mutacao.target.parentElement;
-        const resultado = proprio?.closest?.(".resultado-dados");
-        if (resultado) alvos.add(resultado);
-        mutacao.addedNodes.forEach((no) => {
-          if (no.nodeType !== 1) return;
-          if (no.matches?.(".resultado-dados")) alvos.add(no);
-          no.querySelectorAll?.(".resultado-dados").forEach((el) => alvos.add(el));
-        });
-      }
-      alvos.forEach(verificarResultado);
-    });
-    observador.observe(document.body, { subtree: true, childList: true, characterData: true });
-  }
-
-  function verificarResultado(el) {
-    const texto = el.textContent.replace(/\s+/g, " ").trim();
-    const anterior = resultadosVistos.get(el);
-    resultadosVistos.set(el, texto);
-    if (!texto || texto === anterior || /aguardando/i.test(texto)) return;
-    if (!/\d/.test(texto)) return;
-    mostrarAnimacao(texto);
-  }
-
-  function mostrarAnimacao(texto) {
-    animacaoAtual?.remove();
-    const total = texto.match(/total\s*:?\s*(-?\d+)/i)?.[1]
-      || texto.match(/(?:d\d+\s*:?\s*)(-?\d+)/i)?.[1]
-      || [...texto.matchAll(/-?\d+/g)].at(-1)?.[0]
-      || "?";
-    const tipo = texto.match(/d(4|6|8|10|12|20|100)/i)?.[1] || "20";
-    const camada = document.createElement("div");
-    camada.className = "animacao-dado-ficha";
-    camada.setAttribute("aria-hidden", "true");
-    camada.innerHTML = `<div class="dado-animado-ficha"><svg viewBox="0 0 120 120"><path d="M60 5 109 34 97 92 60 115 23 92 11 34Z"/><path d="M60 5 37 42 60 104 83 42ZM11 34l26 8h46l26-8M23 92l37 12 37-12"/></svg><span>?</span></div><small>D${tipo}</small>`;
-    document.body.appendChild(camada);
-    animacaoAtual = camada;
-    requestAnimationFrame(() => camada.classList.add("rolando"));
-    window.setTimeout(() => {
-      camada.querySelector("span").textContent = total;
-      camada.classList.add("resultado");
-    }, 560);
-    window.setTimeout(() => camada.classList.add("saindo"), 1050);
-    window.setTimeout(() => {
-      camada.remove();
-      if (animacaoAtual === camada) animacaoAtual = null;
-    }, 1350);
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar, { once: true });
-  else iniciar();
-})();
+(()=>{"use strict";
+const TEMAS=["original","roxo","rosa","azul","dourado"],NOMES={original:"Original",roxo:"Roxo",rosa:"Magenta",azul:"Azul-escuro",dourado:"Dourado"},vistos=new WeakMap();let atual=null,ultimoTipo="20",audio=null;
+function iniciar(){if(document.querySelector(".controles-ficha-visual"))return;const rpg=document.body.dataset.rpg||"abismo",ct=`rpg-tema-ficha-${rpg}`,ca=`rpg-animacao-dados-${rpg}`;let tema=localStorage.getItem(ct)||"original",animar=localStorage.getItem(ca)==="true";if(!TEMAS.includes(tema))tema="original";const box=document.createElement("aside");box.className="controles-ficha-visual";box.setAttribute("aria-label","Personalização da ficha");box.innerHTML=`<button class="controle-ficha-tema" type="button"><svg viewBox="0 0 48 48"><path d="M24 6a18 18 0 1 0 0 36h3.2a3.8 3.8 0 0 0 1.1-7.4 3 3 0 0 1 1-5.8H35A7 7 0 0 0 42 22C42 13.2 34 6 24 6Z"/><circle cx="15" cy="20" r="2.4"/><circle cx="20" cy="13" r="2.4"/><circle cx="29" cy="13" r="2.4"/><circle cx="35" cy="20" r="2.4"/></svg></button><button class="controle-ficha-dado" type="button"><svg viewBox="0 0 48 48"><path d="m24 5 17 10-4 20-13 8-13-8-4-20Z"/><path d="m24 5-8 13 8 20 8-20Zm-17 10 9 3 16 0 9-3M11 35l13 3 13-3"/></svg></button>`;document.body.appendChild(box);const bt=box.firstElementChild,bd=box.lastElementChild;
+const pinta=()=>{tema==="original"?delete document.body.dataset.temaFicha:document.body.dataset.temaFicha=tema;const prox=TEMAS[(TEMAS.indexOf(tema)+1)%TEMAS.length];bt.title=`Tema atual: ${NOMES[tema]}. Próximo: ${NOMES[prox]}`;bt.setAttribute("aria-label",`Trocar tema. Tema atual: ${NOMES[tema]}`)},estado=()=>{bd.classList.toggle("ativo",animar);bd.setAttribute("aria-pressed",String(animar));bd.title=`Animação 3D e som: ${animar?"ativados":"desativados"}`;bd.setAttribute("aria-label",`${animar?"Desativar":"Ativar"} animação 3D e som dos dados`)};
+bt.onclick=()=>{tema=TEMAS[(TEMAS.indexOf(tema)+1)%TEMAS.length];localStorage.setItem(ct,tema);pinta()};bd.onclick=()=>{animar=!animar;localStorage.setItem(ca,String(animar));estado();if(animar)prepararAudio()};pinta();estado();
+document.addEventListener("click",e=>{const b=e.target.closest?.(".dado-escolha,.d20,[data-dado]");if(!b)return;const s=`${b.dataset.dado||""} ${b.ariaLabel||""} ${b.textContent||""}`;ultimoTipo=s.match(/d\s*(4|6|8|10|12|20|100)/i)?.[1]||"20";if(animar)prepararAudio()},true);
+document.querySelectorAll(".resultado-dados").forEach(e=>vistos.set(e,e.textContent.trim()));new MutationObserver(ms=>{if(!animar)return;const alvos=new Set();for(const m of ms){const p=m.target.nodeType===1?m.target:m.target.parentElement,r=p?.closest?.(".resultado-dados");if(r)alvos.add(r);m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;if(n.matches?.(".resultado-dados"))alvos.add(n);n.querySelectorAll?.(".resultado-dados").forEach(x=>alvos.add(x))})}alvos.forEach(verificar)}).observe(document.body,{subtree:true,childList:true,characterData:true})}
+function verificar(el){const t=el.textContent.replace(/\s+/g," ").trim(),a=vistos.get(el);vistos.set(el,t);if(t&&t!==a&&!/aguardando/i.test(t)&&/\d/.test(t))mostrar(t)}
+function mostrar(t){atual?.remove();const total=t.match(/total\s*:?\s*(-?\d+)/i)?.[1]||t.match(/d\d+\s*:?\s*(-?\d+)/i)?.[1]||[...t.matchAll(/-?\d+/g)].at(-1)?.[0]||"?",tipo=t.match(/d\s*(4|6|8|10|12|20|100)/i)?.[1]||ultimoTipo||"20",c=document.createElement("div");c.className=`animacao-dado-ficha dado-tipo-${tipo}`;c.ariaHidden="true";c.innerHTML=`<div class="palco-dado-ficha"><div class="sombra-dado-ficha"></div><div class="dado-animado-ficha">${dado(tipo)}<span>?</span></div><i class="rastro-dado rastro-1"></i><i class="rastro-dado rastro-2"></i><i class="rastro-dado rastro-3"></i></div><small>D${tipo}</small>`;document.body.appendChild(c);atual=c;tocarRolagem(tipo);requestAnimationFrame(()=>c.classList.add("rolando"));setTimeout(()=>{c.querySelector("span").textContent=total;c.classList.add("resultado");tocarImpacto(tipo)},920);setTimeout(()=>c.classList.add("saindo"),1500);setTimeout(()=>{c.remove();if(atual===c)atual=null},1840)}
+function dado(tipo){const i=`<svg class="modelo-dado" viewBox="0 0 140 140"><defs><linearGradient id="faceA" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--dado-luz)"/><stop offset=".48" stop-color="var(--dado-meio)"/><stop offset="1" stop-color="var(--dado-sombra)"/></linearGradient><linearGradient id="faceB" x1="1" y1="0" x2="0" y2="1"><stop stop-color="var(--dado-meio)"/><stop offset="1" stop-color="var(--dado-fundo)"/></linearGradient></defs>`,m={
+"4":`<g><path class="face face-a" d="M70 8 128 119 12 119Z"/><path class="face face-b" d="M70 8 70 94 12 119Z"/><path class="face face-c" d="M70 8 128 119 70 94Z"/><path class="aresta" d="M70 8 70 94 12 119m58-25 58 25"/></g>`,
+"6":`<g><path class="face face-a" d="m70 13 53 27-53 29-53-29Z"/><path class="face face-b" d="m17 40 53 29v60l-53-31Z"/><path class="face face-c" d="m123 40-53 29v60l53-31Z"/><path class="aresta" d="M70 69v60M17 40l53 29 53-29"/><g class="pontos"><circle cx="70" cy="39" r="4"/><circle cx="42" cy="73" r="4"/><circle cx="42" cy="103" r="4"/><circle cx="99" cy="72" r="4"/><circle cx="99" cy="101" r="4"/></g></g>`,
+"8":`<g><path class="face face-a" d="M70 5 127 70 70 135 13 70Z"/><path class="face face-b" d="M70 5 70 70 13 70Z"/><path class="face face-c" d="M70 5 127 70 70 70Z"/><path class="face face-d" d="M13 70h57v65Z"/><path class="face face-e" d="M127 70H70v65Z"/><path class="aresta" d="M70 5v130M13 70h114"/></g>`,
+"10":`<g><path class="face face-a" d="M70 5 124 46 108 116 70 135 32 116 16 46Z"/><path class="face face-b" d="M70 5 70 64 16 46Z"/><path class="face face-c" d="M70 5 124 46 70 64Z"/><path class="face face-d" d="m16 46 54 18-38 52Z"/><path class="face face-e" d="m124 46-54 18 38 52Z"/><path class="face face-f" d="m32 116 38-52 38 52-38 19Z"/><path class="aresta" d="M70 5v59L32 116m38-52 38 52M16 46l54 18 54-18"/></g>`,
+"12":`<g><path class="face face-a" d="m70 5 43 20 22 43-20 45-45 22-45-22L5 68l22-43Z"/><path class="face face-b" d="m70 28 31 15 8 34-22 27H53L31 77l8-34Z"/><path class="aresta" d="M70 5v23m43-3-12 18m34 25-26 9m6 36-28-9m-17 31v-31m-45 9 28-9M5 68l26 9m-4-52 12 18"/></g>`,
+"20":`<g><path class="face face-a" d="M70 4 128 38 114 108 70 136 26 108 12 38Z"/><path class="face face-b" d="M70 4 43 48 70 118 97 48Z"/><path class="face face-c" d="M12 38 43 48 26 108 70 118 114 108 97 48 128 38Z"/><path class="aresta" d="M70 4 43 48 12 38m58-34 27 44 31-10M43 48l27 70 27-70M12 38l58 80 58-80M26 108l44 10 44-10"/></g>`,
+"100":`<g><path class="face face-a" d="M45 8 84 37 73 89 45 104 17 89 6 37Z"/><path class="face face-b" d="M45 8v42L6 37m39 13 39-13M17 89l28-39 28 39"/><path class="face face-c" d="M95 36 134 65 123 117 95 132 67 117 56 65Z"/><path class="aresta" d="M95 36v42L56 65m39 13 39-13m-67 52 28-39 28 39"/></g>`};return`${i}${m[tipo]||m["20"]}</svg>`}
+function prepararAudio(){try{audio||=new(window.AudioContext||window.webkitAudioContext)();if(audio.state==="suspended")audio.resume()}catch(_){audio=null}}
+function tocarRolagem(tipo){prepararAudio();if(!audio)return;const a=audio.currentTime,p=Math.min(1.35,.75+Number(tipo==="100"?20:tipo)/55);[0,.11,.23,.37,.55,.72].forEach((x,n)=>clique(a+x,p*(1-n*.08),150+n*27))}
+function tocarImpacto(tipo){if(audio)clique(audio.currentTime,1.12,tipo==="4"?235:112)}
+function clique(q,v,f){const o=audio.createOscillator(),g=audio.createGain(),d=.058;o.type="triangle";o.frequency.setValueAtTime(f,q);o.frequency.exponentialRampToValueAtTime(Math.max(45,f*.45),q+d);g.gain.setValueAtTime(.0001,q);g.gain.exponentialRampToValueAtTime(.055*v,q+.004);g.gain.exponentialRampToValueAtTime(.0001,q+d);o.connect(g).connect(audio.destination);o.start(q);o.stop(q+d+.01)}
+document.readyState==="loading"?document.addEventListener("DOMContentLoaded",iniciar,{once:true}):iniciar()})();
