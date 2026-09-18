@@ -1,7 +1,7 @@
 window.iniciarPainelMestreV7=async function(){
   const auth=window.RPG_AUTH,qs=new URLSearchParams(location.search),campanha=qs.get("campanha")||"Testes",rpg=document.body.dataset.rpg;
   if(auth?.perfil!=="mestre")return;
-  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css";document.head.appendChild(estilo);
+  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css?v=34";document.head.appendChild(estilo);const estiloConfronto=document.createElement("link");estiloConfronto.rel="stylesheet";estiloConfronto.href="../../../confronto-v9.css?v=34";document.head.appendChild(estiloConfronto);
   const main=document.querySelector(".pagina-mestre"),grade=document.querySelector("#grade-mestre"),cabecalho=document.querySelector(".mestre-cabecalho");
   const nav=document.createElement("nav");nav.className="painel-mestre-abas";nav.setAttribute("aria-label","Área da campanha");
   for(const [chave,nome] of [["jogadores","Fichas dos jogadores"],["escudo","Escudo do Mestre"],["npcs","NPCs/Monstros"]]){
@@ -9,12 +9,14 @@ window.iniciarPainelMestreV7=async function(){
   }
   cabecalho.after(nav);
   const escudo=document.createElement("section");escudo.className="escudo-campanha";escudo.hidden=true;
-  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens dos jogadores desta campanha</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><button id="atualizar-escudo" type="button">↻ Atualizar</button></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
+  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens dos jogadores desta campanha</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><div class="acoes-escudo-topo"><button id="testar-animacao" type="button">▶ Ver animação</button><button id="atualizar-escudo" type="button">↻ Atualizar</button></div></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
   main.appendChild(escudo);
   const npcs=document.createElement("section");npcs.className="painel-npcs";npcs.hidden=true;
   npcs.innerHTML='<header class="escudo-resumo-topo"><div><h2>NPCs e Monstros</h2><p>Fichas privadas do Mestre — sem limite de pontos.</p></div><button id="novo-npc" type="button">+ Criar ficha</button></header><div id="grade-npcs" class="resumos-campanha"></div>';
   main.appendChild(npcs);
   const atributos=[["agilidade","AGI"],["forca","FOR"],["apt_magica","APT"],["presenca","PRE"],["resistencia","RES"]];
+  function somPrevia(){try{const C=window.AudioContext||window.webkitAudioContext,ctx=new C(),t=ctx.currentTime,g=ctx.createGain();g.connect(ctx.destination);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.65);const o=ctx.createOscillator();o.connect(g);o.type=rpg==="abismo"?"triangle":"sawtooth";o.frequency.setValueAtTime(rpg==="abismo"?950:180,t);o.frequency.exponentialRampToValueAtTime(rpg==="abismo"?180:1250,t+.38);o.start(t);o.stop(t+.7)}catch{}}
+  function previsualizarAnimacao(){document.querySelector(".inicio-confronto.previa-mestre")?.remove();const tela=document.createElement("div");tela.className=`inicio-confronto tema-${rpg} previa-mestre`;tela.innerHTML=rpg==="abismo"?'<div class="espadas"><i><b></b></i><i><b></b></i><em></em><strong>CONFRONTO</strong></div>':'<div class="lasers"><i></i><i></i><strong>ALVO IDENTIFICADO</strong></div>';document.body.appendChild(tela);somPrevia();const saida=rpg==="marvel"?850:1450,remocao=rpg==="marvel"?1200:1850;setTimeout(()=>tela.classList.add("sumindo"),saida);setTimeout(()=>tela.remove(),remocao)}
   const aviso=(texto)=>{const p=document.querySelector("#aviso-mestre");p.textContent=texto;p.classList.remove("sucesso")};
   async function foto(path){if(!path)return "";const {data}=await auth.cliente.storage.from("personagens").createSignedUrl(path,3600);return data?.signedUrl||""}
   function texto(tag,valor,classe=""){const el=document.createElement(tag);el.textContent=valor;el.className=classe;return el}
@@ -108,7 +110,7 @@ window.iniciarPainelMestreV7=async function(){
     if(tab==="escudo")await atualizar();if(tab==="npcs")await carregarNpcs();
   });
   nav.querySelector("button").classList.add("ativa");
-  document.querySelector("#novo-npc").onclick=()=>location.href="../npc/index.html?campanha="+encodeURIComponent(campanha);document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
+  document.querySelector("#novo-npc").onclick=()=>location.href="../npc/index.html?campanha="+encodeURIComponent(campanha);document.querySelector("#testar-animacao").onclick=previsualizarAnimacao;document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
   const canalRolagens=auth.cliente.channel("rolagens-mestre-"+rpg+"-"+campanha)
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"rolagens_campanha",filter:"rpg=eq."+rpg},payload=>{
       const nova=payload.new;if(nova?.campanha!==campanha)return;
