@@ -43,7 +43,7 @@ window.iniciarRecursosFicha=async function(){
   window.addEventListener("rpg:item-adicionado",e=>{if(e.detail?.personagem_id===id)carregarItens()});
   if(!ehMestre)configurarDescricao(personagem,urlFoto,mostrarMensagem);else{const foto=await urlFoto(personagem.foto_path),preview=painelDesc.querySelector("#foto-descricao-mestre");if(foto&&preview)preview.src=foto;document.querySelector("#editar-personagem")?.addEventListener("click",alternarEdicao)}
   await Promise.all([carregarHabilidades(),carregarItens()]);trocar("combate");
-  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-dados-v5.js?v=23";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
+  await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-dados-v5.js?v=52";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.atualizarFichaV5(personagem);
   if(!ehMestre&&personagem.campanha==="Testes")configurarEdicaoTreino(personagem,auth,mostrarMensagem);
 };

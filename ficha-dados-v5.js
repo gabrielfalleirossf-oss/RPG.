@@ -35,7 +35,7 @@ window.atualizarFichaV5=async function(personagem){
   };
   novo.innerHTML='<h2>Rolar dados</h2><p>Escolha um dado para rolar. Valor máximo = crítico.</p><div class="seletor-dados"></div><output id="resultado-dados" class="resultado-dados" aria-live="polite">Aguardando rolagem</output>';
   const seletor=novo.querySelector(".seletor-dados");
-  Object.entries(geometrias).forEach(([faces,svg])=>{const b=document.createElement("button");b.type="button";b.className="dado-escolha";b.setAttribute("aria-label","Rolar um D"+faces);b.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true">'+svg+'</svg><span>D'+faces+'</span>';b.onclick=()=>rolar(Number(faces),1);seletor.appendChild(b)});
+  Object.entries(geometrias).forEach(([faces,svg])=>{const b=document.createElement("button");b.type="button";b.className="dado-escolha";b.setAttribute("aria-label","Rolar um D"+faces);b.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true">'+svg+'</svg><span>D'+faces+'</span>';b.onclick=()=>{if(window.RPG_COMBATE_TURNO?.bloquearDados())return;rolar(Number(faces),1)};seletor.appendChild(b)});
   const personalizado=document.createElement("button");personalizado.type="button";personalizado.className="dado-escolha";personalizado.setAttribute("aria-label","Dados personalizados");personalizado.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 5 91 28v44L50 95 9 72V28Z"/><path d="M50 30v40M30 50h40"/></svg><span>Personalizado</span>';seletor.appendChild(personalizado);
   anterior.replaceWith(novo);
   function rolar(faces,quantidade,prefixo="",modificador=0){
@@ -55,10 +55,10 @@ window.atualizarFichaV5=async function(personagem){
     }
   }
   document.querySelectorAll("#lista-pericias button.pericia").forEach(botao=>{
-    botao.addEventListener("click",evento=>{evento.preventDefault();evento.stopImmediatePropagation();const bonus=Number(botao.children[2]?.textContent)||0;rolar(20,1,botao.querySelector("span").textContent+": ",bonus)},{capture:true});
+    botao.addEventListener("click",evento=>{const nome=botao.querySelector("span").textContent;if(window.RPG_COMBATE_TURNO?.bloquearPericia(nome)){evento.preventDefault();evento.stopImmediatePropagation();return}evento.preventDefault();evento.stopImmediatePropagation();const bonus=Number(botao.children[2]?.textContent)||0;rolar(20,1,nome+": ",bonus)},{capture:true});
   });
   const dialog=document.createElement("dialog");dialog.className="modal-recurso";
   dialog.innerHTML='<form><header><h2>Dados personalizados</h2><button type="button" aria-label="Fechar">×</button></header><label>Quantidade de dados<input name="quantidade" type="number" min="1" max="100" value="1" required></label><label>Faces de cada dado<input name="faces" type="number" min="2" max="1000" value="20" required></label><footer><button class="botao principal" type="submit">Rolar dados</button></footer></form>';
   document.body.appendChild(dialog);personalizado.onclick=()=>dialog.showModal();dialog.querySelector('button[type="button"]').onclick=()=>dialog.close();
-  dialog.querySelector("form").onsubmit=e=>{e.preventDefault();const f=e.currentTarget;rolar(Number(f.faces.value),Number(f.quantidade.value));dialog.close()};
+  dialog.querySelector("form").onsubmit=e=>{e.preventDefault();if(window.RPG_COMBATE_TURNO?.bloquearDados()){dialog.close();return}const f=e.currentTarget;rolar(Number(f.faces.value),Number(f.quantidade.value));dialog.close()};
 };
