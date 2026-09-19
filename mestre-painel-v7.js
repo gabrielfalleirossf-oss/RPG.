@@ -1,7 +1,7 @@
 window.iniciarPainelMestreV7=async function(){
   const auth=window.RPG_AUTH,qs=new URLSearchParams(location.search),campanha=qs.get("campanha")||"Testes",rpg=document.body.dataset.rpg;
   if(auth?.perfil!=="mestre")return;
-  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css?v=42";document.head.appendChild(estilo);const estiloConfronto=document.createElement("link");estiloConfronto.rel="stylesheet";estiloConfronto.href="../../../confronto-v9.css?v=36";document.head.appendChild(estiloConfronto);
+  const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../mestre-painel-v7.css?v=54";document.head.appendChild(estilo);const estiloConfronto=document.createElement("link");estiloConfronto.rel="stylesheet";estiloConfronto.href="../../../confronto-v9.css?v=36";document.head.appendChild(estiloConfronto);
   const main=document.querySelector(".pagina-mestre"),grade=document.querySelector("#grade-mestre"),cabecalho=document.querySelector(".mestre-cabecalho");
   const nav=document.createElement("nav");nav.className="painel-mestre-abas";nav.setAttribute("aria-label","Área da campanha");
   for(const [chave,nome] of [["jogadores","Fichas dos jogadores"],["escudo","Escudo do Mestre"],["npcs","NPCs/Monstros"]]){
@@ -9,7 +9,7 @@ window.iniciarPainelMestreV7=async function(){
   }
   cabecalho.after(nav);
   const escudo=document.createElement("section");escudo.className="escudo-campanha";escudo.hidden=true;
-  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens de jogadores, NPCs e monstros</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><section class="confrontos-escudo"><header class="escudo-resumo-topo"><div><small>Tempo real</small><h2>Confrontos ativos</h2></div></header><div id="confrontos-ativos" class="lista-confrontos-ativos"></div></section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><div class="acoes-escudo-topo"><button id="testar-animacao" type="button">▶ Ver animação</button><button id="atualizar-escudo" type="button">↻ Atualizar</button></div></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
+  escudo.innerHTML='<aside class="historico-mestre"><header><h2>Histórico de dados</h2><small>Rolagens de jogadores, NPCs e monstros</small></header><div id="historico-dados" aria-live="polite"></div><button id="mais-historico" type="button">Carregar anteriores</button></aside><section><section class="confrontos-escudo"><header class="escudo-resumo-topo"><div><small>Tempo real</small><h2>Confrontos ativos</h2></div></header><div id="confrontos-ativos" class="lista-confrontos-ativos"></div></section><header class="escudo-resumo-topo"><h2>Jogadores da campanha</h2><div class="acoes-escudo-topo"><button id="restaurar-todos" type="button">♥ Restaurar jogadores</button><button id="limpar-historico" type="button">🗑 Limpar histórico</button><button id="testar-animacao" type="button">▶ Ver animação</button><button id="atualizar-escudo" type="button">↻ Atualizar</button></div></header><div id="resumos-campanha" class="resumos-campanha"></div></section>';
   main.appendChild(escudo);
   const npcs=document.createElement("section");npcs.className="painel-npcs";npcs.hidden=true;
   npcs.innerHTML='<header class="escudo-resumo-topo"><div><h2>NPCs e Monstros</h2><p>Fichas privadas do Mestre — sem limite de pontos.</p></div><button id="novo-npc" type="button">+ Criar ficha</button></header><div id="grade-npcs" class="resumos-campanha"></div>';
@@ -63,6 +63,16 @@ window.iniciarPainelMestreV7=async function(){
     const mapa=new Map(registros.map(r=>[r.id,r]));data.forEach(r=>mapa.set(r.id,r));registros=[...mapa.values()];desenharHistorico();
   }
   async function atualizar(){if(ocupado)return;ocupado=true;try{await Promise.all([carregarResumo(),carregarHistorico(),carregarConfrontos()])}finally{ocupado=false}}
+  async function restaurarTodos(){
+    if(!confirm("Restaurar Vida, Energia Mágica e Sanidade de todos os jogadores desta campanha para seus valores máximos?"))return;
+    const botao=document.querySelector("#restaurar-todos");botao.disabled=true;
+    try{const{data,error}=await auth.cliente.rpc("restaurar_recursos_campanha",{alvo_rpg:rpg,alvo_campanha:campanha});if(error)throw error;await carregarResumo();alert(`${data||0} jogador(es) restaurado(s) com sucesso.`)}catch(error){aviso("Não foi possível restaurar os jogadores: "+error.message)}finally{botao.disabled=false}
+  }
+  async function limparHistorico(){
+    if(!confirm("Apagar TODO o histórico de dados desta campanha? Esta ação não poderá ser desfeita."))return;
+    const botao=document.querySelector("#limpar-historico");botao.disabled=true;
+    try{const{data,error}=await auth.cliente.rpc("limpar_historico_campanha",{alvo_rpg:rpg,alvo_campanha:campanha});if(error)throw error;registros=[];anteriores=0;acabou=true;desenharHistorico();alert(`${data||0} rolagem(ns) apagada(s).`)}catch(error){aviso("Não foi possível limpar o histórico: "+error.message)}finally{botao.disabled=false}
+  }
   async function carregarNpcs(){
     const {data,error}=await auth.cliente.from("npcs_monstros").select("*").eq("rpg",rpg).eq("campanha",campanha).order("criado_em");
     if(error){aviso("Para criar NPCs e monstros, execute mestre-painel-v7.sql: "+error.message);return}
@@ -113,7 +123,7 @@ window.iniciarPainelMestreV7=async function(){
     if(tab==="escudo")await atualizar();if(tab==="npcs")await carregarNpcs();
   });
   nav.querySelector("button").classList.add("ativa");
-  document.querySelector("#novo-npc").onclick=()=>location.href="../npc/index.html?campanha="+encodeURIComponent(campanha);document.querySelector("#testar-animacao").onclick=previsualizarAnimacao;document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
+  document.querySelector("#novo-npc").onclick=()=>location.href="../npc/index.html?campanha="+encodeURIComponent(campanha);document.querySelector("#restaurar-todos").onclick=restaurarTodos;document.querySelector("#limpar-historico").onclick=limparHistorico;document.querySelector("#testar-animacao").onclick=previsualizarAnimacao;document.querySelector("#atualizar-escudo").onclick=atualizar;document.querySelector("#mais-historico").onclick=()=>carregarHistorico(true);
   const canalRolagens=auth.cliente.channel("rolagens-mestre-"+rpg+"-"+campanha)
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"rolagens_campanha",filter:"rpg=eq."+rpg},payload=>{
       const nova=payload.new;if(nova?.campanha!==campanha)return;
