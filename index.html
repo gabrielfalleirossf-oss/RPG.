@@ -1,10 +1,74 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ficha — Marvel RPG</title><link rel="stylesheet" href="../../../personagem.css?v=23"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="../../../supabase-config.js?v=3" defer></script><script src="../../../auth-guard.js?v=37" defer></script><script src="../../../personagem.js?v=58" defer></script><link rel="stylesheet" href="../../../personalizacao-ficha-v46.css?v=48"><script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script><script src="../../../personalizacao-ficha-v46.js?v=48" defer></script><link rel="stylesheet" href="../../../combate-turnos-v57.css?v=57"><script src="../../../combate-turnos-v57.js?v=60" defer></script><link rel="stylesheet" href="../../../confronto-reformulado-v60.css?v=60"><script src="../../../confronto-reformulado-v60.js?v=60" defer></script></head>
-<body data-rpg="marvel" data-perfil="jogador" data-pagina="ficha"><div class="fundo"></div><main class="pagina pagina-ficha" hidden>
-<nav class="ficha-topo"><a class="ficha-logo" href="../index.html">MARVEL RPG</a><div class="ficha-abas"><button class="ficha-aba ativa">Ficha</button><button class="ficha-aba">Habilidades</button><button class="ficha-aba">Inventário</button><button class="ficha-aba">Descrição</button></div><a class="voltar compacto" href="../index.html">← Campanhas</a></nav>
-<p id="mensagem" class="mensagem ficha-mensagem"></p><section class="ficha-grade">
-<section class="ficha-coluna ficha-identidade"><div class="identidade-cabecalho"><div class="retrato-wrap"><img id="foto-ficha" class="ficha-retrato" alt="Foto do personagem"><div id="retrato-vazio" class="retrato-vazio">?</div></div><dl class="identidade-dados"><div><dt>Personagem</dt><dd id="nome-ficha">—</dd></div><div><dt>Origem</dt><dd>Desconhecida</dd></div><div><dt>Jogador</dt><dd id="jogador-ficha">—</dd></div><div><dt>Classe</dt><dd>Aprimorado</dd></div></dl></div>
-<div class="atributos atributos-marvel"><svg class="atributos-sigilo" viewBox="0 0 390 310" aria-hidden="true"><circle cx="195" cy="157" r="95"/><circle cx="195" cy="157" r="69"/><path d="M195 22 275 270 66 117 324 117 115 270Z"/><path d="M195 60 258 250 99 132 291 132 132 250Z"/></svg><button class="atributo agilidade" data-atributo="agilidade"><strong>0</strong><small>Agilidade</small></button><button class="atributo forca" data-atributo="forca"><strong>0</strong><small>Força</small></button><button class="atributo aptidao" data-atributo="apt_magica"><strong>0</strong><small>Apt. Mágica</small></button><button class="atributo presenca" data-atributo="presenca"><strong>0</strong><small>Presença</small></button><button class="atributo resistencia" data-atributo="resistencia"><strong>0</strong><small>Resistência</small></button><div id="pontos-atributo" class="pontos-atributo"><strong>5</strong><small>Pontos</small></div></div>
-<div class="progresso-personagem"><span>Nível <strong id="nivel-ficha">0</strong></span><span>Experiência <strong id="experiencia-ficha">0%</strong></span></div><div class="recurso vida"><div class="recurso-titulo"><span>Vida</span><strong id="vida-ficha">15 / 15</strong></div><div class="recurso-trilho"><i id="barra-vida" style="--valor:100%"></i></div></div><div class="recurso energia"><div class="recurso-titulo"><span>Energia mágica</span><strong id="energia-ficha">0 / 0</strong></div><div class="recurso-trilho"><i id="barra-energia" style="--valor:0%"></i></div></div></section>
-<section class="ficha-coluna ficha-pericias"><h1>Perícias</h1><div class="tabela-pericias"><div class="pericia cabeca"><span>Perícia</span><span>Atributo</span><span>Bônus</span><span>Treino</span></div><div id="lista-pericias"></div></div></section>
-<section class="ficha-coluna ficha-combate"><h1>Combate</h1><form id="form-dados" class="rolar-dados"><div><h2>Rolar dados</h2><p>Escolha a quantidade e role o d20.</p></div><div class="dados-controles"><label>Quantidade<input id="quantidade-dados" type="number" min="1" max="20" value="1"></label><label>Modificador<input id="modificador-dados" type="number" min="-99" max="99" value="0"></label><button class="d20 d20-vetor" type="submit" aria-label="Rolar d20"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="dado-borda" d="M50 4 91 28 82 78 50 96 18 78 9 28Z"/><path d="M50 4 31 31 9 28M50 4l19 27 22-3M31 31l19 51 19-51M9 28l41 54 41-54M18 78l32 4 32-4"/></svg><span>20</span></button></div><button class="botao principal rolar" type="submit">Rolar</button><output id="resultado-dados" class="resultado-dados">Aguardando rolagem</output></form></section>
-</section></main></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Escolha sua aventura</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <main class="tela-inicial">
+        <h1 class="titulo-principal">Escolha sua aventura</h1>
+
+        <div class="seletor-aventuras">
+            <!-- Lado do RPG de fantasia -->
+            <section class="lado-aventura lado-rpg" aria-label="RPG de fantasia">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-rpg.png"
+                    alt="Aventureiros enfrentando uma aranha gigante"
+                >
+            </section>
+
+            <!-- A rachadura permanece entre os dois universos -->
+            <div class="rachadura" aria-hidden="true">
+                <svg viewBox="0 0 80 1000" preserveAspectRatio="none">
+                    <path
+                        d="M38 0 L24 110 L47 230 L20 340 L58 465 L30 590 L52 720 L28 850 L42 1000"
+                    ></path>
+                </svg>
+            </div>
+
+            <!-- Lado do RPG da Marvel -->
+            <section class="lado-aventura lado-marvel" aria-label="RPG da Marvel">
+                <img
+                    class="imagem-aventura"
+                    src="assets/background-marvel.png"
+                    alt="Mosaico em preto e branco com heróis dos quadrinhos"
+                >
+            </section>
+
+            <!-- Os botões ficam parados enquanto os backgrounds se movem -->
+            <div class="botoes-aventura">
+                <a
+                    class="botao-aventura botao-rpg"
+                    href="rpg/index.html"
+                    aria-label="Entrar no RPG Abismo"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-rpg.png"
+                        alt="Logo do RPG Abismo"
+                    >
+                </a>
+
+                <a
+                    class="botao-aventura botao-marvel"
+                    href="marvel/index.html"
+                    aria-label="Entrar no RPG da Marvel"
+                >
+                    <img
+                        class="logo-aventura"
+                        src="assets/logo-marvel.png"
+                        alt="Logo do RPG da Marvel"
+                    >
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,28 @@
+CORRECAO DA TELA BRANCA
+
+CAUSA
+Os arquivos index.html que pertenciam as pastas internas foram enviados para a
+raiz do repositorio. O GitHub renomeou alguns para index (1).html, index (2).html
+e substituiu o index.html principal pela ficha Marvel.
+
+COMO CORRIGIR
+
+1. Na raiz do repositorio, envie o index.html deste pacote e confirme Replace.
+
+2. Envie os quatro arquivos abaixo na raiz:
+   acoes-mestre-v8.js
+   combate-turnos-v57.js
+   confronto-reformulado-v60.js
+   confronto-reformulado-v60.css
+
+3. Arraste as PASTAS rpg e marvel inteiras para o upload do GitHub.
+   Nao abra as pastas e nao selecione todos os index.html juntos.
+   A estrutura das subpastas precisa ser preservada.
+
+4. Os arquivos index (1).html, index (2).html e semelhantes que ficaram na raiz
+   foram enviados por engano. Eles nao sao usados pelo site. Podem ser apagados
+   depois, mas nao e necessario apaga-los para o site voltar.
+
+5. Espere o GitHub Pages concluir e use Ctrl+F5.
+
+O SQL do Supabase NAO precisa ser executado novamente.
