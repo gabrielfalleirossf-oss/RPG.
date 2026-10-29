@@ -40,7 +40,7 @@ window.iniciarPainelMestreV7=async function(){
     else{const a=texto("a","Abrir ficha →");a.href="../ficha/index.html?campanha="+encodeURIComponent(campanha)+"&id="+p.id;card.appendChild(a)}
     return card;
   }
-  let tab="jogadores",ocupado=false,registros=[],anteriores=0,acabou=false;
+  let tab="jogadores",ocupado=false,registros=[],eventosConfronto=[],idsConfronto=new Set(),anteriores=0,acabou=false;
   async function carregarResumo(){
     const {data,error}=await auth.cliente.from("personagens").select("*").eq("rpg",rpg).eq("campanha",campanha).order("criado_em");
     if(error){aviso("Não foi possível atualizar as fichas: "+error.message);return}
@@ -50,9 +50,9 @@ window.iniciarPainelMestreV7=async function(){
   async function carregarConfrontos(){const lista=document.querySelector('#confrontos-ativos'),{data,error}=await auth.cliente.from('confrontos').select('id,oponente_tipo,personagem_a_id,personagem_b_id,npc_b_id,criado_em').eq('rpg',rpg).eq('campanha',campanha).eq('ativo',true).order('criado_em',{ascending:false});if(error){lista.replaceChildren(texto('p','Não foi possível carregar os confrontos: '+error.message,'painel-vazio'));return}const cards=await Promise.all((data||[]).map(async c=>{const{data:d}=await auth.cliente.rpc('obter_confronto_detalhes',{confronto_alvo:c.id}),el=document.createElement('article');el.className='confronto-ativo-card';if(!d){el.textContent='Confronto indisponível';return el}el.innerHTML='<div><small>'+ (c.oponente_tipo==='npc'?'Jogador × NPC/Monstro':'Jogador × Jogador') +'</small><h3></h3><p>Iniciado '+new Date(c.criado_em).toLocaleString('pt-BR')+'</p></div><a>Abrir ficha do confronto →</a>';el.querySelector('h3').textContent=d.lado_a.nome+' × '+d.lado_b.nome;const a=el.querySelector('a');a.href=c.oponente_tipo==='npc'?'../npc/ficha/index.html?campanha='+encodeURIComponent(campanha)+'&id='+encodeURIComponent(d.lado_b.id)+'&confronto='+encodeURIComponent(c.id):'../confronto/index.html?campanha='+encodeURIComponent(campanha)+'&confronto='+encodeURIComponent(c.id);a.target='_blank';a.rel='noopener';return el}));lista.replaceChildren(...cards);if(!cards.length)lista.appendChild(texto('p','Nenhum confronto ativo nesta campanha.','sem-confronto'))}
   function desenharHistorico(){
     const lista=document.querySelector("#historico-dados");lista.replaceChildren();
-    registros.sort((a,b)=>new Date(b.criado_em)-new Date(a.criado_em));
-    if(!registros.length)lista.appendChild(texto("p","As próximas rolagens dos jogadores aparecerão aqui.","painel-vazio"));
-    registros.forEach(r=>{const el=document.createElement("article"),mod=Number(r.modificador)||0,conta=r.resultados.join(" + ")+(mod?` ${mod>0?"+":"−"} ${Math.abs(mod)}`:"");el.className="rolagem-historico"+(r.critico?" critico":"");el.append(texto("small",new Date(r.criado_em).toLocaleString("pt-BR")),texto("h3",r.jogador_nome+" · "+r.personagem_nome),texto("p",r.origem+" · "+r.resultados.length+"D"+r.faces),texto("strong",conta+" = "+r.total));if(r.critico)el.appendChild(texto("span","Crítico!"));lista.appendChild(el)});
+    const todos=[...registros,...eventosConfronto].sort((a,b)=>new Date(b.criado_em)-new Date(a.criado_em));
+    if(!todos.length)lista.appendChild(texto("p","As próximas rolagens e resultados aparecerão aqui.","painel-vazio"));
+    todos.forEach(r=>{const el=document.createElement("article");if(r._confronto){const d=r.detalhes||{},acertou=d.acertou===true||d.acertou==='true',resumo=acertou?`Ataque ${d.ataque_total} × ${d.defesa_pericia||'Defesa'} ${d.defesa_total} • ${d.dano||0} de dano${Number(d.dano_defesa)>0?` • Defesa −${d.dano_defesa}`:''}${Number(d.dano_vida)>0?` • Vida −${d.dano_vida}`:''}`:`Ataque ${d.ataque_total} × ${d.defesa_pericia||'Defesa'} ${d.defesa_total} • Golpe evitado`;el.className='rolagem-historico resultado-confronto-v62';el.append(texto('small',new Date(r.criado_em).toLocaleString('pt-BR')),texto('h3',acertou?'Golpe acertou':'Defesa bem-sucedida'),texto('strong',resumo));lista.appendChild(el);return}const mod=Number(r.modificador)||0,conta=r.resultados.join(" + ")+(mod?` ${mod>0?"+":"−"} ${Math.abs(mod)}`:"");el.className="rolagem-historico"+(r.critico?" critico":"");el.append(texto("small",new Date(r.criado_em).toLocaleString("pt-BR")),texto("h3",r.jogador_nome+" · "+r.personagem_nome),texto("p",r.origem+" · "+r.resultados.length+"D"+r.faces),texto("strong",conta+" = "+r.total));if(r.critico)el.appendChild(texto("span","Crítico!"));lista.appendChild(el)});
     document.querySelector("#mais-historico").hidden=acabou;
   }
   async function carregarHistorico(mais=false){
@@ -62,7 +62,8 @@ window.iniciarPainelMestreV7=async function(){
     if(mais||anteriores===0){anteriores+=data.length;acabou=data.length<100}
     const mapa=new Map(registros.map(r=>[r.id,r]));data.forEach(r=>mapa.set(r.id,r));registros=[...mapa.values()];desenharHistorico();
   }
-  async function atualizar(){if(ocupado)return;ocupado=true;try{await Promise.all([carregarResumo(),carregarHistorico(),carregarConfrontos()])}finally{ocupado=false}}
+  async function carregarEventosConfronto(){const{data:cs}=await auth.cliente.from('confrontos').select('id').eq('rpg',rpg).eq('campanha',campanha).order('criado_em',{ascending:false}).limit(30);idsConfronto=new Set((cs||[]).map(x=>x.id));if(!idsConfronto.size){eventosConfronto=[];return}const{data}=await auth.cliente.from('historico_confronto_v60').select('id,confronto_id,tipo,detalhes,criado_em').in('confronto_id',[...idsConfronto]).eq('tipo','resolucao').order('criado_em',{ascending:false}).limit(100);eventosConfronto=(data||[]).map(x=>({...x,_confronto:true}))}
+  async function atualizar(){if(ocupado)return;ocupado=true;try{await Promise.all([carregarResumo(),carregarHistorico(),carregarEventosConfronto(),carregarConfrontos()]);desenharHistorico()}finally{ocupado=false}}
   async function restaurarTodos(){
     if(!confirm("Restaurar Vida, Energia Mágica e Sanidade de todos os jogadores desta campanha para seus valores máximos?"))return;
     const botao=document.querySelector("#restaurar-todos");botao.disabled=true;
@@ -130,9 +131,10 @@ window.iniciarPainelMestreV7=async function(){
       if(!registros.some(registro=>registro.id===nova.id)){registros.unshift(nova);anteriores+=1;if(tab==="escudo")desenharHistorico()}
     }).subscribe();
   const canalConfrontos=auth.cliente.channel('confrontos-escudo-'+rpg+'-'+campanha).on('postgres_changes',{event:'*',schema:'public',table:'confrontos',filter:'rpg=eq.'+rpg},payload=>{const linha=payload.new||payload.old;if(linha?.campanha===campanha&&tab==='escudo')carregarConfrontos()}).subscribe();
-  const timer=setInterval(()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()},3000);
-  document.addEventListener("visibilitychange",()=>{if(tab==="escudo"&&!document.hidden)carregarHistorico()});
-  window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens);auth.cliente.removeChannel(canalConfrontos)},{once:true});
+  const canalEventos=auth.cliente.channel('eventos-confronto-escudo-'+rpg+'-'+campanha).on('postgres_changes',{event:'INSERT',schema:'public',table:'historico_confronto_v60'},payload=>{const nova=payload.new;if(nova?.tipo!=='resolucao'||!idsConfronto.has(nova.confronto_id))return;if(!eventosConfronto.some(x=>x.id===nova.id))eventosConfronto.unshift({...nova,_confronto:true});if(tab==='escudo')desenharHistorico()}).subscribe();
+  const timer=setInterval(async()=>{if(tab==="escudo"&&!document.hidden){await Promise.all([carregarHistorico(),carregarEventosConfronto()]);desenharHistorico()}},3000);
+  document.addEventListener("visibilitychange",async()=>{if(tab==="escudo"&&!document.hidden){await Promise.all([carregarHistorico(),carregarEventosConfronto()]);desenharHistorico()}});
+  window.addEventListener("pagehide",()=>{clearInterval(timer);auth.cliente.removeChannel(canalRolagens);auth.cliente.removeChannel(canalConfrontos);auth.cliente.removeChannel(canalEventos)},{once:true});
   await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../acoes-mestre-v8.js?v=49";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});
   await window.iniciarAcoesMestreV8();
 };
