@@ -23,7 +23,11 @@ window.atualizarFichaV5=async function(personagem){
   let pontos=document.querySelector("#pontos-atributo");
   if(!pontos){pontos=document.createElement("div");pontos.id="pontos-atributo";pontos.className="pontos-atributo";pontos.innerHTML="<strong></strong><small>Pontos</small>";atributos.appendChild(pontos);pontos.querySelector("strong").textContent=personagem.pontos_atributo??0}
   const titulo=document.createElement("span");titulo.className="titulo-pentagrama";titulo.textContent="Atributos";atributos.appendChild(titulo);
-  const sincronizar=()=>{const restantes=Number(pontos.querySelector("strong").textContent)||0;titulo.hidden=restantes>0;pontos.classList.toggle("esgotado",restantes<=0)};
+  const alternar=document.createElement("button");alternar.type="button";alternar.className="alternar-testes-atributo";alternar.innerHTML='<span></span><small>Testes</small>';alternar.setAttribute("aria-label","Ativar testes de atributo");atributos.appendChild(alternar);
+  let testesAtivos=localStorage.getItem("rpg-testes-atributos")==="1";
+  const atualizarAlternador=()=>{const restantes=Number(pontos.querySelector("strong").textContent)||0;alternar.disabled=restantes>0;alternar.classList.toggle("ativo",testesAtivos&&restantes<=0);alternar.setAttribute("aria-pressed",String(testesAtivos&&restantes<=0));alternar.title=restantes>0?"Distribua todos os pontos antes de ativar os testes.":testesAtivos?"Desativar testes de atributo":"Ativar testes de atributo";atributos.classList.toggle("testes-atributos-ativos",testesAtivos&&restantes<=0)};
+  alternar.onclick=e=>{e.preventDefault();e.stopPropagation();if(alternar.disabled)return;testesAtivos=!testesAtivos;localStorage.setItem("rpg-testes-atributos",testesAtivos?"1":"0");atualizarAlternador()};
+  const sincronizar=()=>{const restantes=Number(pontos.querySelector("strong").textContent)||0;titulo.hidden=restantes>0;pontos.classList.toggle("esgotado",restantes<=0);atualizarAlternador()};
   new MutationObserver(sincronizar).observe(pontos.querySelector("strong"),{childList:true,characterData:true,subtree:true});sincronizar();
   const anterior=document.querySelector("#form-dados"),novo=document.createElement("section");novo.className="rolar-dados dados-novos";novo.id="form-dados";
   const geometrias={
@@ -38,10 +42,10 @@ window.atualizarFichaV5=async function(personagem){
   Object.entries(geometrias).forEach(([faces,svg])=>{const b=document.createElement("button");b.type="button";b.className="dado-escolha";b.setAttribute("aria-label","Rolar um D"+faces);b.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true">'+svg+'</svg><span>D'+faces+'</span>';b.onclick=()=>{if(window.RPG_COMBATE_TURNO?.bloquearDados())return;rolar(Number(faces),1)};seletor.appendChild(b)});
   const personalizado=document.createElement("button");personalizado.type="button";personalizado.className="dado-escolha";personalizado.setAttribute("aria-label","Dados personalizados");personalizado.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 5 91 28v44L50 95 9 72V28Z"/><path d="M50 30v40M30 50h40"/></svg><span>Personalizado</span>';seletor.appendChild(personalizado);
   anterior.replaceWith(novo);
-  function rolar(faces,quantidade,prefixo="",modificador=0){
+  function rolar(faces,quantidade,prefixo="",modificador=0,usarMaior=false){
     const valores=Array.from({length:quantidade},()=>Math.floor(Math.random()*faces)+1),saida=novo.querySelector("#resultado-dados");
-    const total=valores.reduce((a,b)=>a+b,0)+modificador;
-    const critico=valores.some(v=>v===faces),expressao=valores.join(" + ")+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"");
+    const base=usarMaior?Math.max(...valores):valores.reduce((a,b)=>a+b,0),total=base+modificador;
+    const critico=valores.some(v=>v===faces),expressao=usarMaior?`${quantidade}D${faces}: [${valores.join(", ")}] · maior ${base}${modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:""}`:valores.join(" + ")+(modificador?` ${modificador>0?"+":"−"} ${Math.abs(modificador)}`:"");
     saida.replaceChildren();const resumo=document.createElement("div");resumo.className="expressao-rolagem";resumo.textContent=prefixo+expressao;saida.appendChild(resumo);
     const soma=document.createElement("div");soma.className="total-rolagem";soma.textContent="Total: "+total;saida.appendChild(soma);
     resumo.classList.toggle("resultado-critico",critico);soma.classList.toggle("resultado-critico",critico);
@@ -50,13 +54,14 @@ window.atualizarFichaV5=async function(personagem){
       auth.cliente.from("rolagens_campanha").insert({
         personagem_id:personagem.id,usuario_id:auth.usuario.id,rpg:personagem.rpg,campanha:personagem.campanha,
         jogador_nome:auth.acesso.nome_exibicao,personagem_nome:personagem.nome,faces,resultados:valores,
-        total:valores.reduce((a,b)=>a+b,0),origem:prefixo.replace(/: $/,"")||"Dados",critico:valores.some(v=>v===faces)
+        total,origem:prefixo.replace(/: $/,"")||"Dados",critico:valores.some(v=>v===faces),modificador
       }).then(({error})=>{if(error){const aviso=document.querySelector("#mensagem");aviso.textContent="Rolagem feita, mas não foi salva no histórico. Confira mestre-painel-v7.sql no Supabase.";aviso.classList.remove("sucesso")}}).catch(()=>{document.querySelector("#mensagem").textContent="Sem conexão para salvar esta rolagem no histórico."});
     }
   }
   document.querySelectorAll("#lista-pericias button.pericia").forEach(botao=>{
-    botao.addEventListener("click",evento=>{const nome=botao.querySelector("span").textContent;if(window.RPG_COMBATE_TURNO?.bloquearPericia(nome)){evento.preventDefault();evento.stopImmediatePropagation();return}evento.preventDefault();evento.stopImmediatePropagation();const bonus=Number(botao.children[2]?.textContent)||0;rolar(20,1,nome+": ",bonus)},{capture:true});
+    botao.addEventListener("click",evento=>{const nome=botao.querySelector("span").textContent;if(window.RPG_COMBATE_TURNO?.bloquearPericia(nome)){evento.preventDefault();evento.stopImmediatePropagation();return}evento.preventDefault();evento.stopImmediatePropagation();const bonus=(Number(botao.children[2]?.textContent)||0)+(Number(botao.children[3]?.textContent)||0),sigla=(botao.children[1]?.textContent||"").replace(/[()]/g,"").trim(),mapa={AGI:"agilidade",FOR:"forca",APT:"apt_magica",PRE:"presenca",RES:"resistencia"},valor=Number(document.querySelector(`.atributo[data-atributo="${mapa[sigla]}"] strong`)?.textContent)||0,quantidade=Math.min(5,Math.max(1,valor));rolar(20,quantidade,nome+": ",bonus,true)},{capture:true});
   });
+  document.querySelectorAll(".atributo[data-atributo]").forEach(botao=>botao.addEventListener("click",evento=>{if(!testesAtivos||alternar.disabled)return;if(window.RPG_COMBATE_TURNO?.bloquearDados())return;evento.preventDefault();evento.stopImmediatePropagation();const valor=Number(botao.querySelector("strong")?.textContent)||0,nome=botao.querySelector("small")?.textContent||"Atributo",quantidade=Math.min(5,Math.max(1,valor));rolar(20,quantidade,`Teste de ${nome}: `,0,true)},{capture:true}));
   const dialog=document.createElement("dialog");dialog.className="modal-recurso";
   dialog.innerHTML='<form><header><h2>Dados personalizados</h2><button type="button" aria-label="Fechar">×</button></header><label>Quantidade de dados<input name="quantidade" type="number" min="1" max="100" value="1" required></label><label>Faces de cada dado<input name="faces" type="number" min="2" max="1000" value="20" required></label><footer><button class="botao principal" type="submit">Rolar dados</button></footer></form>';
   document.body.appendChild(dialog);personalizado.onclick=()=>dialog.showModal();dialog.querySelector('button[type="button"]').onclick=()=>dialog.close();

@@ -160,7 +160,7 @@ async function iniciarFicha(){
 
 function aplicarValoresFicha(valores){
   const nomes=["agilidade","forca","apt_magica","presenca","resistencia"];
-  nomes.forEach(nome=>{const botao=document.querySelector(`.atributo[data-atributo="${nome}"]`);if(botao){botao.querySelector("strong").textContent=valorComOrigem(valores,nome);botao.disabled=(valores.pontos_atributo??0)<=0}});
+  nomes.forEach(nome=>{const botao=document.querySelector(`.atributo[data-atributo="${nome}"]`);if(botao){botao.querySelector("strong").textContent=valorComOrigem(valores,nome);botao.disabled=false}});
   const pontos=document.querySelector("#pontos-atributo");
   if(pontos){pontos.querySelector("strong").textContent=valores.pontos_atributo??0;pontos.classList.toggle("esgotado",(valores.pontos_atributo??0)<=0)}
   document.querySelector("#nivel-ficha").textContent=valores.nivel??0;
@@ -180,5 +180,5 @@ function rolarDados(quantidade=1,modificador=0,prefixo=""){
   saida.textContent=`${prefixo}${detalhe} = ${total}`;saida.classList.remove("animando");void saida.offsetWidth;saida.classList.add("animando");
 }
 
-async function carregarRecursosDaFicha(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css?v=49";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js?v=58";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
+async function carregarRecursosDaFicha(){const estilo=document.createElement("link");estilo.rel="stylesheet";estilo.href="../../../ficha-recursos.css?v=49";document.head.appendChild(estilo);await new Promise((resolve,reject)=>{const script=document.createElement("script");script.src="../../../ficha-recursos.js?v=69";script.onload=resolve;script.onerror=reject;document.head.appendChild(script)});await window.iniciarRecursosFicha()}
 document.addEventListener("DOMContentLoaded",async()=>{auth=await obterAuth();document.querySelector(".pagina").hidden=false;if(pagina==="criar")await iniciarCriacao();if(pagina==="selecionar")await iniciarSelecao();if(pagina==="ficha"){await iniciarFicha();await carregarRecursosDaFicha()}});
