@@ -1,0 +1,43 @@
+.raca-visivel-v75{display:flex;align-items:center;justify-content:space-between;gap:18px;border:1px solid rgba(56,194,255,.34);background:rgba(56,194,255,.045);padding:15px 17px;margin:14px 0}
+.raca-visivel-v75 span{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#8f9eaa}.raca-visivel-v75 strong{font-family:Georgia,serif;font-size:1.15rem;text-transform:uppercase;color:var(--cor-tema,#3ec5ff)}
+.controle-raca-mestre-v74{display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:9px 15px;align-items:end;margin:12px 0 16px;padding:15px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.025)}
+.controle-raca-mestre-v74>label:first-child{grid-row:1/3}.controle-raca-mestre-v74 .revelar-raca-v74{display:flex;align-items:center;gap:9px;margin:0}.controle-raca-mestre-v74 input[type=checkbox]{width:18px;height:18px;accent-color:var(--cor-tema,#42c9ff)}.controle-raca-mestre-v74>small{grid-column:2;color:#9ba8b2}.controle-raca-mestre-v74>small.erro{color:#ff7f8b}
+
+/* A arte fica atras da interface real. Nenhum elemento decorativo captura cliques. */
+.efeito-raca-v76{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#020812 center/cover no-repeat;opacity:0;transition:opacity .7s ease}
+.efeito-ghoul-v76{background-image:linear-gradient(rgba(0,5,13,.08),rgba(0,5,13,.08)),url("./assets/ghoul-cenario-v76.png");opacity:1;animation:ghoul-respiracao-v76 5.5s ease-in-out infinite alternate}
+.pagina,.pagina-ficha,.fundo,main{position:relative;z-index:1}
+
+body[data-raca-visivel="ghoul"]{background:#020812;color-scheme:dark}
+body[data-raca-visivel="ghoul"] .ficha-topo{background:linear-gradient(180deg,rgba(1,7,15,.9),rgba(1,7,15,.46));border-bottom-color:rgba(255,37,75,.38)}
+body[data-raca-visivel="ghoul"] .ficha-grade>*,
+body[data-raca-visivel="ghoul"] .ficha-coluna,
+body[data-raca-visivel="ghoul"] .painel-recurso-ficha{
+  position:relative;background:linear-gradient(145deg,rgba(2,10,19,.94),rgba(1,5,12,.9));
+  border-color:rgba(232,35,66,.72)!important;
+  box-shadow:0 0 0 1px rgba(255,38,70,.12),0 0 22px rgba(182,0,37,.16),inset 0 0 42px rgba(83,0,18,.1)
+}
+body[data-raca-visivel="ghoul"] .ficha-grade>*::before,
+body[data-raca-visivel="ghoul"] .ficha-coluna::before,
+body[data-raca-visivel="ghoul"] .painel-recurso-ficha::before{
+  content:"";position:absolute;inset:5px;z-index:3;pointer-events:none;
+  background:
+    linear-gradient(135deg,#ff254e 0 2px,transparent 2px) 0 0/34px 34px no-repeat,
+    linear-gradient(225deg,#ff254e 0 2px,transparent 2px) 100% 0/34px 34px no-repeat,
+    linear-gradient(45deg,#ff254e 0 2px,transparent 2px) 0 100%/34px 34px no-repeat,
+    linear-gradient(315deg,#ff254e 0 2px,transparent 2px) 100% 100%/34px 34px no-repeat;
+  filter:drop-shadow(0 0 5px rgba(255,19,64,.85));opacity:.92
+}
+body[data-raca-visivel="ghoul"] .ficha-logo,
+body[data-raca-visivel="ghoul"] .raca-visivel-v75 strong{color:#ff315b;text-shadow:0 0 13px rgba(255,18,65,.85)}
+body[data-raca-visivel="ghoul"] .raca-visivel-v75{border-color:rgba(255,33,75,.72);background:rgba(115,0,25,.18);box-shadow:inset 0 0 24px rgba(150,0,30,.14)}
+
+/* Kakugan ao redor do retrato; a foto continua visivel e clicavel. */
+body[data-raca-visivel="ghoul"] .retrato-wrap{isolation:isolate;overflow:visible!important}
+body[data-raca-visivel="ghoul"] .retrato-wrap::before{content:"";position:absolute;left:-12%;right:-12%;top:-27%;height:48%;z-index:4;pointer-events:none;background:url("./assets/ghoul-kakugan-v76.png") center/contain no-repeat;filter:drop-shadow(0 0 9px rgba(255,0,44,.8));animation:kakugan-v76 2.7s ease-in-out infinite alternate}
+body[data-raca-visivel="ghoul"] .retrato-wrap img{position:relative;z-index:2}
+
+@keyframes ghoul-respiracao-v76{0%{filter:saturate(.94) brightness(.88)}100%{filter:saturate(1.12) brightness(1.04)}}
+@keyframes kakugan-v76{0%{opacity:.78;transform:scale(.98)}100%{opacity:1;transform:scale(1.025)}}
+@media(max-width:900px){.controle-raca-mestre-v74{grid-template-columns:1fr}.controle-raca-mestre-v74>label:first-child{grid-row:auto}.controle-raca-mestre-v74>small{grid-column:1}.efeito-ghoul-v76{background-position:center top}body[data-raca-visivel="ghoul"] .retrato-wrap::before{top:-20%;height:38%}}
+@media(prefers-reduced-motion:reduce){.efeito-ghoul-v76,body[data-raca-visivel="ghoul"] .retrato-wrap::before{animation:none}}
