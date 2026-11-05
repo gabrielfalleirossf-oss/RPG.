@@ -1,6 +1,7 @@
 (function(){
 'use strict';
 if(!document.querySelector('link[data-ajustes-v72]')){const css=document.createElement('link');css.rel='stylesheet';css.href=(location.pathname.includes('/npc/')?'../../../../':'../../../')+'confronto-mestre-v72.css?v=72';css.dataset.ajustesV72='1';document.head.appendChild(css)}
+if(!document.querySelector('script[data-editor-mestre-v73]')){const raiz=location.pathname.includes('/npc/')?'../../../../':'../../../';const css=document.createElement('link');css.rel='stylesheet';css.href=raiz+'editor-ficha-mestre-v73.css?v=73';document.head.appendChild(css);const js=document.createElement('script');js.src=raiz+'editor-ficha-mestre-v73.js?v=73';js.defer=true;js.dataset.editorMestreV73='1';document.head.appendChild(js)}
 if(!document.querySelector('script[data-grupo-v71]')){const css=document.createElement('link');css.rel='stylesheet';css.href=(location.pathname.includes('/npc/')?'../../../../':'../../../')+'confronto-grupo-v71.css?v=71';document.head.appendChild(css);const js=document.createElement('script');js.src=(location.pathname.includes('/npc/')?'../../../../':'../../../')+'confronto-grupo-v71.js?v=71';js.defer=true;js.dataset.grupoV71='1';document.head.appendChild(js)}
 if(new URLSearchParams(location.search).has('grupo'))return;
 const esperar=()=>window.RPG_AUTH?Promise.resolve(window.RPG_AUTH):new Promise(r=>document.addEventListener('rpg:auth-pronto',e=>r(e.detail),{once:true}));
