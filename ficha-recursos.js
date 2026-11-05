@@ -4,7 +4,7 @@ const RACAS_MESTRE_V74=["Humano","Ghoul","Uchiha","Elfo","Fada","Vampiro","Kitsu
 window.iniciarRecursosFicha=async function(){
   const auth=window.RPG_AUTH,id=new URLSearchParams(location.search).get("id"),rpg=document.body.dataset.rpg,ehMestre=auth?.perfil==="mestre";
   const estiloTreino=document.createElement("link");estiloTreino.rel="stylesheet";estiloTreino.href="../../../ficha-treino-v21.css?v=23";document.head.appendChild(estiloTreino);
-  const estiloRacas=document.createElement("link");estiloRacas.rel="stylesheet";estiloRacas.href="../../../racas-ficha-v78.css?v=78";document.head.appendChild(estiloRacas);
+  const estiloRacas=document.createElement("link");estiloRacas.rel="stylesheet";estiloRacas.href="../../../racas-ficha-v79.css?v=79";document.head.appendChild(estiloRacas);
   if(!auth||!id||document.body.dataset.recursosProntos)return;document.body.dataset.recursosProntos="1";
   const grade=document.querySelector(".ficha-grade"),abas=document.querySelector(".ficha-abas");if(!grade||!abas)return;
   const botoes=[...abas.querySelectorAll(".ficha-aba")];botoes[0].textContent="Combate";botoes[0].dataset.aba="combate";
@@ -26,6 +26,7 @@ window.iniciarRecursosFicha=async function(){
   const {data:racaVisivel,error:erroRacaVisivel}=await auth.cliente.rpc("raca_visivel_personagem_v72",{personagem_alvo:id});
   const racaExibida=erroRacaVisivel?"Humano":(racaVisivel||"Humano");
   aplicarVisualRacaV75(racaExibida);
+  configurarTransparenciaFichaV79();
   if(!ehMestre)painelDesc.innerHTML=montarDescricao(personagem,racaExibida);else{
     painelDesc.innerHTML=montarDescricaoMestreDireta(personagem);
     await carregarRacaMestreV74(auth.cliente,id,painelDesc);
@@ -57,6 +58,18 @@ window.iniciarRecursosFicha=async function(){
   await window.atualizarFichaV5(personagem);
   if(!ehMestre&&personagem.campanha==="Testes")configurarEdicaoTreino(personagem,auth,mostrarMensagem);
 };
+function configurarTransparenciaFichaV79(){
+  if(document.querySelector("#transparencia-ficha-v79"))return;
+  const niveis=[100,75,50,25,0],chave="rpg-opacidade-ficha-v79";
+  let atual=Number(localStorage.getItem(chave));
+  if(!niveis.includes(atual))atual=100;
+  const botao=document.createElement("button");
+  botao.id="transparencia-ficha-v79";botao.className="transparencia-ficha-v79";botao.type="button";
+  botao.innerHTML='<span class="fantasma-v79" aria-hidden="true">&#128123;</span><small></small>';
+  const aplicar=()=>{document.body.dataset.transparenciaFicha=String(atual);botao.querySelector("small").textContent=`${atual}%`;botao.title=`Transparência da ficha: ${atual}%. Clique para diminuir.`;botao.setAttribute("aria-label",botao.title);botao.setAttribute("aria-valuenow",String(atual))};
+  botao.addEventListener("click",()=>{atual=niveis[(niveis.indexOf(atual)+1)%niveis.length];localStorage.setItem(chave,String(atual));aplicar()});
+  document.body.appendChild(botao);aplicar();
+}
 function montarDescricao(p,raca="Humano"){const origem=p.campanha==="Testes"?`<section class="origem-descricao-controle"><span>Origem atual</span><strong>${p.origem||"Desconhecida"}</strong><button id="alterar-origem" class="botao" type="button">Alterar a origem</button></section>`:`<label>Origem<input value="${p.origem||"Desconhecida"}" disabled><small>Na campanha principal, somente o Mestre pode alterar a origem.</small></label>`;return `<article class="editor-descricao-jogador"><header><div><span>Identidade do personagem</span><h1>Descrição</h1></div></header><form id="form-descricao"><div class="descricao-edicao-grade"><label class="foto-descricao"><input name="foto" type="file" accept="image/png,image/jpeg,image/webp"><img id="foto-descricao-preview" alt=""><span>Alterar imagem</span></label><div><label>Nome<input name="nome" maxlength="80" required></label>${origem}<section class="raca-visivel-v75"><span>Raça</span><strong>${String(raca).replace(/[<>]/g,"")}</strong></section><label>História<textarea name="historia" maxlength="5000"></textarea></label><label>Personalidade<textarea name="personalidade" maxlength="2500"></textarea></label><label>Objetivos durante a campanha<textarea name="objetivos" maxlength="2500"></textarea></label><label>Anotações<textarea name="anotacoes" maxlength="5000"></textarea></label></div></div><footer><button class="botao principal" type="submit">Salvar descrição</button></footer></form><div class="respiro-ficha"></div></article>`}
 
 function aplicarVisualRacaV75(raca){const slug=String(raca||"Humano").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z?]/g,"");document.body.dataset.racaVisivel=slug;document.querySelector(".efeito-raca-v75,.efeito-raca-v76,.efeito-raca-v77")?.remove();const disponiveis=["ghoul","uchiha","elfo","fada","vampiro","kitsune","humano"];if(!disponiveis.includes(slug))return;const efeito=document.createElement("div");efeito.className=`efeito-raca-v77 efeito-${slug}-v77`;efeito.setAttribute("aria-hidden","true");document.body.prepend(efeito)}
