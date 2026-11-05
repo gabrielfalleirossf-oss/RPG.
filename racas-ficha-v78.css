@@ -1,0 +1,83 @@
+.raca-visivel-v75{display:flex;align-items:center;justify-content:space-between;gap:18px;border:1px solid rgba(56,194,255,.34);background:rgba(56,194,255,.045);padding:15px 17px;margin:14px 0}
+.raca-visivel-v75 span{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#8f9eaa}.raca-visivel-v75 strong{font-family:Georgia,serif;font-size:1.15rem;text-transform:uppercase;color:var(--cor-tema,#3ec5ff)}
+.controle-raca-mestre-v74{display:grid;grid-template-columns:minmax(260px,1fr) auto;gap:9px 15px;align-items:end;margin:12px 0 16px;padding:15px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.025)}
+.controle-raca-mestre-v74>label:first-child{grid-row:1/3}.controle-raca-mestre-v74 .revelar-raca-v74{display:flex;align-items:center;gap:9px;margin:0}.controle-raca-mestre-v74 input[type=checkbox]{width:18px;height:18px;accent-color:var(--cor-tema,#42c9ff)}.controle-raca-mestre-v74>small{grid-column:2;color:#9ba8b2}.controle-raca-mestre-v74>small.erro{color:#ff7f8b}
+
+/* A arte fica atras da interface real. Nenhum elemento decorativo captura cliques. */
+.efeito-raca-v76,.efeito-raca-v77{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#020812 center/cover no-repeat;opacity:0;transition:opacity .7s ease}
+.efeito-raca-v77{opacity:1;animation:raca-respiracao-v77 6s ease-in-out infinite alternate}
+.efeito-ghoul-v77{background-image:linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.08)),url("./assets/ghoul-cenario-v76.png")}
+.efeito-uchiha-v77{background-image:linear-gradient(rgba(0,2,8,.14),rgba(0,2,8,.14)),url("./assets/uchiha-cenario-v77.png")}
+.efeito-elfo-v77{background-image:linear-gradient(rgba(0,12,10,.1),rgba(0,8,7,.12)),url("./assets/elfo-cenario-v77.png")}
+.efeito-fada-v77{background-image:linear-gradient(rgba(5,3,22,.08),rgba(5,3,22,.1)),url("./assets/fada-cenario-v77.png")}
+.efeito-vampiro-v77{background-image:linear-gradient(rgba(7,0,4,.08),rgba(7,0,4,.1)),url("./assets/vampiro-cenario-v77.png")}
+.efeito-kitsune-v77{background-image:linear-gradient(rgba(0,7,19,.08),rgba(0,7,19,.1)),url("./assets/kitsune-cenario-v77.png")}
+.efeito-humano-v77{background-image:linear-gradient(rgba(7,8,10,.12),rgba(7,8,10,.12)),url("./assets/humano-cenario-v77.png")}
+.pagina,.pagina-ficha,.fundo,main{position:relative;z-index:1}
+
+body[data-raca-visivel="ghoul"]{background:#020812;color-scheme:dark}
+body[data-raca-visivel="ghoul"] .ficha-topo{background:linear-gradient(180deg,rgba(1,4,9,.74),rgba(1,4,9,.32));border-bottom-color:rgba(255,37,75,.38);backdrop-filter:blur(4px)}
+body[data-raca-visivel="ghoul"] .ficha-grade>*,
+body[data-raca-visivel="ghoul"] .ficha-coluna,
+body[data-raca-visivel="ghoul"] .painel-recurso-ficha{
+  position:relative;background:linear-gradient(145deg,rgba(2,7,13,.76),rgba(1,3,8,.64));backdrop-filter:blur(3.5px);
+  border-color:rgba(232,35,66,.72)!important;
+  box-shadow:0 0 0 1px rgba(255,38,70,.12),0 0 22px rgba(182,0,37,.16),inset 0 0 42px rgba(83,0,18,.1)
+}
+body[data-raca-visivel="ghoul"] .ficha-grade>*::before,
+body[data-raca-visivel="ghoul"] .ficha-coluna::before,
+body[data-raca-visivel="ghoul"] .painel-recurso-ficha::before{
+  content:"";position:absolute;inset:5px;z-index:3;pointer-events:none;
+  background:
+    linear-gradient(135deg,#ff254e 0 2px,transparent 2px) 0 0/34px 34px no-repeat,
+    linear-gradient(225deg,#ff254e 0 2px,transparent 2px) 100% 0/34px 34px no-repeat,
+    linear-gradient(45deg,#ff254e 0 2px,transparent 2px) 0 100%/34px 34px no-repeat,
+    linear-gradient(315deg,#ff254e 0 2px,transparent 2px) 100% 100%/34px 34px no-repeat;
+  filter:drop-shadow(0 0 5px rgba(255,19,64,.85));opacity:.92
+}
+body[data-raca-visivel="ghoul"] .ficha-logo,
+body[data-raca-visivel="ghoul"] .raca-visivel-v75 strong{color:#ff315b;text-shadow:0 0 13px rgba(255,18,65,.85)}
+body[data-raca-visivel="ghoul"] .raca-visivel-v75{border-color:rgba(255,33,75,.72);background:rgba(115,0,25,.18);box-shadow:inset 0 0 24px rgba(150,0,30,.14)}
+
+/* Kakugan ao redor do retrato; a foto continua visivel e clicavel. */
+body[data-raca-visivel="ghoul"] .retrato-wrap{isolation:isolate;overflow:visible!important}
+body[data-raca-visivel="ghoul"] .retrato-wrap::before{content:"";position:absolute;left:-12%;right:-12%;top:-27%;height:48%;z-index:4;pointer-events:none;background:url("./assets/ghoul-kakugan-v76.png") center/contain no-repeat;filter:drop-shadow(0 0 9px rgba(255,0,44,.8));animation:kakugan-v76 2.7s ease-in-out infinite alternate}
+body[data-raca-visivel="ghoul"] .retrato-wrap img{position:relative;z-index:2}
+
+@keyframes ghoul-respiracao-v76{0%{filter:saturate(.94) brightness(.88)}100%{filter:saturate(1.12) brightness(1.04)}}
+@keyframes raca-respiracao-v77{0%{filter:saturate(.94) brightness(.9)}100%{filter:saturate(1.06) brightness(1.02)}}
+@keyframes kakugan-v76{0%{opacity:.78;transform:scale(.98)}100%{opacity:1;transform:scale(1.025)}}
+@media(max-width:900px){.controle-raca-mestre-v74{grid-template-columns:1fr}.controle-raca-mestre-v74>label:first-child{grid-row:auto}.controle-raca-mestre-v74>small{grid-column:1}.efeito-ghoul-v76{background-position:center top}body[data-raca-visivel="ghoul"] .retrato-wrap::before{top:-20%;height:38%}}
+@media(prefers-reduced-motion:reduce){.efeito-ghoul-v76,body[data-raca-visivel="ghoul"] .retrato-wrap::before{animation:none}}
+
+/* Paletas das racas reveladas */
+body[data-raca-visivel="uchiha"]{--raca-accent:#e92849;--raca-rgb:233,40,73}
+body[data-raca-visivel="elfo"]{--raca-accent:#9bdc72;--raca-rgb:155,220,114}
+body[data-raca-visivel="fada"]{--raca-accent:#d9a7ff;--raca-rgb:217,167,255}
+body[data-raca-visivel="vampiro"]{--raca-accent:#bd1739;--raca-rgb:189,23,57}
+body[data-raca-visivel="kitsune"]{--raca-accent:#ffad42;--raca-rgb:255,173,66}
+body[data-raca-visivel="humano"]{--raca-accent:#d49a55;--raca-rgb:212,154,85}
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]){background:#02070d}
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .ficha-grade>*,
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .ficha-coluna,
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .painel-recurso-ficha{background:linear-gradient(145deg,rgba(2,8,14,.76),rgba(1,4,9,.64));backdrop-filter:blur(3.5px);border-color:rgba(var(--raca-rgb),.62)!important;box-shadow:0 0 22px rgba(var(--raca-rgb),.13),inset 0 0 35px rgba(var(--raca-rgb),.05)}
+
+/* Componentes internos continuam escuros, mas agora deixam o cenario respirar. */
+body:is([data-raca-visivel="ghoul"],[data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) :is(.painel-dados,.seletor-dados,.mini-ficha,.editor-descricao-jogador,.cartao-habilidade,.slot-item){background-color:rgba(1,5,10,.62)!important;backdrop-filter:blur(2px)}
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .ficha-logo,
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .raca-visivel-v75 strong{color:var(--raca-accent);text-shadow:0 0 12px rgba(var(--raca-rgb),.7)}
+body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .raca-visivel-v75{border-color:rgba(var(--raca-rgb),.58);background:rgba(var(--raca-rgb),.08)}
+
+/* Ghoul: superficies antes azuis ficam pretas; detalhes antes brancos ficam vermelhos. */
+body[data-raca-visivel="ghoul"]{--accent:#07070a!important;--cor-tema:#07070a!important;--destaque:#ff244e!important;--rgb:255,36,78!important;color:#ff3156}
+body[data-raca-visivel="ghoul"] :is(.ficha-topo,.seletor-dados button,.botao,.atributo,.recurso-trilho,.painel-dados,.mini-ficha){background-color:#030307!important}
+body[data-raca-visivel="ghoul"] :is(.atributo,.seletor-dados button,.botao,.recurso-trilho,input,select,textarea){border-color:rgba(255,36,78,.74)!important}
+body[data-raca-visivel="ghoul"] :is(h1,h2,h3,.ficha-aba,.atributo strong,.atributo small,.recurso-titulo,.progresso-personagem span,.seletor-dados button){color:#ff3156!important;text-shadow:0 0 8px rgba(255,20,61,.3)}
+body[data-raca-visivel="ghoul"] .energia .recurso-trilho i{background:linear-gradient(90deg,#000,#18151a)!important;box-shadow:0 0 12px rgba(255,35,73,.25),inset 0 0 0 1px #7d0b25!important}
+
+/* Sanidade Ghoul em forma de centopeia: segmentos, dorso, patas e cabeca. */
+body[data-raca-visivel="ghoul"] .sanidade .recurso-trilho{position:relative;height:32px;padding:5px 7px;overflow:visible;background:#020203!important;border-color:#711126!important;box-shadow:inset 0 0 12px #000,0 0 12px rgba(255,20,58,.28)}
+body[data-raca-visivel="ghoul"] .sanidade .recurso-trilho i{position:relative;display:block;height:100%;border-radius:999px 40% 40% 999px;background:repeating-radial-gradient(ellipse at center,#f53b55 0 4px,#781126 5px 8px,#20030a 9px 11px)!important;box-shadow:0 0 10px #e6193d,inset 0 2px 4px rgba(255,210,210,.35)!important;overflow:visible}
+body[data-raca-visivel="ghoul"] .sanidade .recurso-trilho i::before{content:"";position:absolute;inset:-7px 5px;background:repeating-linear-gradient(90deg,transparent 0 8px,#e53851 8px 10px,transparent 10px 16px);clip-path:polygon(0 38%,100% 38%,100% 62%,0 62%);filter:drop-shadow(0 0 2px #ff294a);transform:skewY(18deg);z-index:-1}
+body[data-raca-visivel="ghoul"] .sanidade .recurso-trilho i::after{content:"";position:absolute;right:-5px;top:50%;width:22px;height:22px;transform:translateY(-50%);border-radius:54% 46% 48% 52%;background:radial-gradient(circle at 68% 38%,#fff 0 1px,#ff263f 2px 3px,transparent 4px),radial-gradient(circle at 68% 68%,#fff 0 1px,#ff263f 2px 3px,transparent 4px),linear-gradient(90deg,#4c0713,#d31c38);box-shadow:0 0 9px #ff244b,inset 2px 0 4px #160006}
+@media(prefers-reduced-motion:reduce){.efeito-raca-v77{animation:none}}

@@ -4,7 +4,7 @@ const RACAS_MESTRE_V74=["Humano","Ghoul","Uchiha","Elfo","Fada","Vampiro","Kitsu
 window.iniciarRecursosFicha=async function(){
   const auth=window.RPG_AUTH,id=new URLSearchParams(location.search).get("id"),rpg=document.body.dataset.rpg,ehMestre=auth?.perfil==="mestre";
   const estiloTreino=document.createElement("link");estiloTreino.rel="stylesheet";estiloTreino.href="../../../ficha-treino-v21.css?v=23";document.head.appendChild(estiloTreino);
-  const estiloRacas=document.createElement("link");estiloRacas.rel="stylesheet";estiloRacas.href="../../../racas-ficha-v77.css?v=77";document.head.appendChild(estiloRacas);
+  const estiloRacas=document.createElement("link");estiloRacas.rel="stylesheet";estiloRacas.href="../../../racas-ficha-v78.css?v=78";document.head.appendChild(estiloRacas);
   if(!auth||!id||document.body.dataset.recursosProntos)return;document.body.dataset.recursosProntos="1";
   const grade=document.querySelector(".ficha-grade"),abas=document.querySelector(".ficha-abas");if(!grade||!abas)return;
   const botoes=[...abas.querySelectorAll(".ficha-aba")];botoes[0].textContent="Combate";botoes[0].dataset.aba="combate";
