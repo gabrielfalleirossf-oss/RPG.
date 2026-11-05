@@ -1,0 +1,8 @@
+.controle-raca-v72{border:1px solid rgba(255,255,255,.25);padding:18px;margin:0 0 18px;background:rgba(255,255,255,.025)}
+.controle-raca-v72 header{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:14px}
+.controle-raca-v72 small{letter-spacing:.14em;text-transform:uppercase;opacity:.7}.controle-raca-v72 h3{margin:4px 0;font:700 1.25rem Georgia}
+.controle-raca-v72 .campos-raca-v72{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}
+.controle-raca-v72 label{display:grid;gap:7px;font-size:.78rem}.controle-raca-v72 select{padding:11px;background:#080b0f;color:#fff;border:1px solid #64717c}
+.controle-raca-v72 .revelar-v72{display:flex;align-items:center;gap:8px;padding:11px;border:1px solid #64717c}.controle-raca-v72 input[type=checkbox]{width:18px;height:18px}
+.controle-raca-v72 button{margin-top:12px;padding:10px 15px;border:1px solid currentColor;background:transparent;color:#fff;cursor:pointer}.controle-raca-v72 p{margin:9px 0 0;min-height:18px;color:#70e6a0}
+@media(max-width:650px){.controle-raca-v72 .campos-raca-v72{grid-template-columns:1fr}}

@@ -74,4 +74,4 @@ async function editarPersonagem(){
   });
 }
 
-document.addEventListener("DOMContentLoaded",async()=>{acessoMestre=await obterAcessoMestre();document.querySelector(".pagina-mestre").hidden=false;if(paginaMestre==="lista"){await listarPersonagens();const script=document.createElement("script");script.src="../../../mestre-painel-v7.js?v=71";script.onload=()=>window.iniciarPainelMestreV7();document.head.appendChild(script)}if(paginaMestre==="editar")await editarPersonagem()});
+document.addEventListener("DOMContentLoaded",async()=>{acessoMestre=await obterAcessoMestre();document.querySelector(".pagina-mestre").hidden=false;if(paginaMestre==="lista"){await listarPersonagens();const script=document.createElement("script");script.src="../../../mestre-painel-v7.js?v=71";script.onload=()=>window.iniciarPainelMestreV7();document.head.appendChild(script)}if(paginaMestre==="editar"){await editarPersonagem();const css=document.createElement("link");css.rel="stylesheet";css.href="../../../racas-mestre-v72.css?v=72";document.head.appendChild(css);const script=document.createElement("script");script.src="../../../racas-mestre-v72.js?v=72";document.head.appendChild(script)}});

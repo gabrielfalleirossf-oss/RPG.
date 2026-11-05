@@ -1,0 +1,21 @@
+/* V72: no painel do Mestre, avisos de confronto nunca cobrem nem congelam a tela. */
+body.confronto-mestre #popup-confronto-v60.popup-mestre-v72,
+#popup-confronto-v60.popup-mestre-v72{
+  position:fixed!important;inset:auto 22px 22px auto!important;width:min(430px,calc(100vw - 32px))!important;
+  min-height:0!important;background:transparent!important;backdrop-filter:none!important;display:block!important;
+  pointer-events:none!important;z-index:10000!important;padding:0!important
+}
+#popup-confronto-v60.popup-mestre-v72 article{
+  width:auto!important;max-height:min(48vh,420px);overflow:auto;margin:0!important;padding:18px!important;
+  border:1px solid var(--accent,#42c8ff);background:rgba(2,8,14,.97);box-shadow:0 18px 55px rgba(0,0,0,.65);
+  pointer-events:auto!important
+}
+#popup-confronto-v60.popup-mestre-v72 h2{font-size:1.2rem;margin:6px 0}
+#popup-confronto-v60.popup-mestre-v72 p{font-size:.9rem;margin:7px 0 12px}
+#popup-confronto-v60.popup-mestre-v72 footer{display:flex;justify-content:flex-end;gap:8px}
+html.confronto-pausado-v60 body.confronto-mestre>*{pointer-events:auto!important}
+body.confronto-mestre.controle-mestre-pausado-v70{pointer-events:auto!important;overflow:auto!important}
+body.confronto-mestre.controle-mestre-pausado-v70::before,
+body.confronto-mestre.controle-mestre-pausado-v70::after{pointer-events:none!important;display:none!important}
+body.confronto-mestre.cg-pausado>:not(#confronto-grupo-v71):not(dialog){pointer-events:auto!important}
+@media(max-width:650px){#popup-confronto-v60.popup-mestre-v72{right:10px!important;bottom:10px!important;width:calc(100vw - 20px)!important}}
