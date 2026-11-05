@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Símbolo do clã Uchiha">
+  <defs>
+    <radialGradient id="vermelho" cx="38%" cy="28%" r="76%">
+      <stop offset="0" stop-color="#ff536a"/>
+      <stop offset=".48" stop-color="#df1838"/>
+      <stop offset="1" stop-color="#700718"/>
+    </radialGradient>
+    <linearGradient id="cabo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#89909a"/>
+    </linearGradient>
+  </defs>
+  <path d="M120 18A91 91 0 0 0 29 109c0 10 2 21 5 31h172c3-10 5-21 5-31a91 91 0 0 0-91-91Z" fill="url(#vermelho)" stroke="#ff3152" stroke-width="5"/>
+  <path d="M34 140h172c-10 31-36 50-68 55v28h-36v-28c-32-5-58-24-68-55Z" fill="url(#cabo)" stroke="#e9edf2" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M40 140h160" fill="none" stroke="#17030a" stroke-width="6"/>
+</svg>

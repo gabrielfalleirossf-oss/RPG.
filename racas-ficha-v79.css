@@ -7,7 +7,7 @@
 .efeito-raca-v76,.efeito-raca-v77{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#020812 center/cover no-repeat;opacity:0;transition:opacity .7s ease}
 .efeito-raca-v77{opacity:1;animation:raca-respiracao-v77 6s ease-in-out infinite alternate}
 .efeito-ghoul-v77{background-image:linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.08)),url("./assets/ghoul-cenario-v76.png")}
-.efeito-uchiha-v77{background-image:linear-gradient(rgba(0,2,8,.14),rgba(0,2,8,.14)),url("./assets/uchiha-cenario-v77.png")}
+.efeito-uchiha-v77{background-image:linear-gradient(rgba(0,2,8,.11),rgba(0,2,8,.11)),url("./assets/uchiha-cenario-v80.png")}
 .efeito-elfo-v77{background-image:linear-gradient(rgba(0,12,10,.1),rgba(0,8,7,.12)),url("./assets/elfo-cenario-v77.png")}
 .efeito-fada-v77{background-image:linear-gradient(rgba(5,3,22,.08),rgba(5,3,22,.1)),url("./assets/fada-cenario-v77.png")}
 .efeito-vampiro-v77{background-image:linear-gradient(rgba(7,0,4,.08),rgba(7,0,4,.1)),url("./assets/vampiro-cenario-v77.png")}
@@ -108,3 +108,18 @@ body[data-raca-visivel="ghoul"] .transparencia-ficha-v79{border-color:#ff244e;co
 body[data-raca-visivel="ghoul"] .transparencia-ficha-v79:hover{box-shadow:0 0 22px #ff244e}
 body:is([data-raca-visivel="uchiha"],[data-raca-visivel="elfo"],[data-raca-visivel="fada"],[data-raca-visivel="vampiro"],[data-raca-visivel="kitsune"],[data-raca-visivel="humano"]) .transparencia-ficha-v79{border-color:var(--raca-accent);color:var(--raca-accent);box-shadow:0 0 16px rgba(var(--raca-rgb),.38)}
 @media(max-width:700px){.transparencia-ficha-v79{right:10px;top:238px;width:48px;height:48px}.transparencia-ficha-v79 .fantasma-v79{font-size:19px}}
+
+/* V80: o sigilo central da ficha Uchiha se transforma no leque do cla. */
+body[data-raca-visivel="uchiha"] .atributos-sigilo{opacity:0!important}
+body[data-raca-visivel="uchiha"] .atributos::before{
+  content:""!important;display:block!important;position:absolute!important;z-index:0!important;
+  width:205px!important;height:205px!important;inset:52px auto auto 50%!important;
+  transform:translateX(-50%)!important;border:0!important;clip-path:none!important;
+  background:url("./assets/uchiha-leque-v80.svg") center/contain no-repeat!important;
+  filter:drop-shadow(0 0 8px rgba(255,27,61,.8)) drop-shadow(0 0 22px rgba(150,0,28,.52))!important;
+  opacity:.9;animation:uchiha-leque-pulso-v80 3.2s ease-in-out infinite alternate;pointer-events:none
+}
+body[data-raca-visivel="uchiha"] .atributos::after{display:none!important}
+body[data-raca-visivel="uchiha"] .atributos>b{z-index:1;color:#fff!important;text-shadow:0 0 5px #000,0 0 10px #e92849!important}
+@keyframes uchiha-leque-pulso-v80{from{opacity:.72;filter:drop-shadow(0 0 6px rgba(255,27,61,.62)) drop-shadow(0 0 15px rgba(150,0,28,.38))}to{opacity:1;filter:drop-shadow(0 0 11px rgba(255,27,61,.92)) drop-shadow(0 0 27px rgba(150,0,28,.62))}}
+@media(prefers-reduced-motion:reduce){body[data-raca-visivel="uchiha"] .atributos::before{animation:none}}
